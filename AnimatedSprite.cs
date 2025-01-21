@@ -75,6 +75,7 @@ public class AnimatedSprite : Sprite
     public void Start()
     {
         _currentFrame = StartFrame;
+        _timestamp = 0;
         _running = true;
     }
 

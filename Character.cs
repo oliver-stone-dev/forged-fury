@@ -16,20 +16,29 @@ public class PlayerCharacter
     private enum AnimationStates
     {
 
-        Idle,
+        IdleRight,
+        IdleLeft,
         RunRight,
         RunLeft,
         AttackRight,
         AttackLeft
     }
 
-    private readonly float _defaultMoveSpeed = 140f;
+    private enum Direction
+    {
+        Left,
+        Right
+    }
+
+    private readonly float _defaultMoveSpeed = 100f;
     private readonly AnimatedSprite _animatedSprite;
     private AnimationStates _animationState;
     private bool _waitToFinish = false;
 
     private bool _attackFlag = false;
     private bool _attackButtonPressed = false;
+
+    private Direction _characterDirection = Direction.Right;
 
     public Vector2 Position;
     public Vector2 Velocity;
@@ -45,8 +54,6 @@ public class PlayerCharacter
         Velocity = Vector2.Zero;
         Scale = 2f;
 
-        _animationState = AnimationStates.Idle;
-
         _animatedSprite = new AnimatedSprite(texture2D);
         _animatedSprite.Position = this.Position;
         _animatedSprite.FrameHeight = 64;
@@ -54,15 +61,16 @@ public class PlayerCharacter
         _animatedSprite.Width = 64;
         _animatedSprite.Height = 64;
         _animatedSprite.Scale = Scale;
-        _animatedSprite.MaxFrame = 4;
-        _animatedSprite.Period = 250;
 
+        _animationState = AnimationStates.IdleRight;
+        SetAnimatedSpriteAnimation(_animationState);
         _animatedSprite.Start();
     }
 
     public void Update(GameTime gameTime)
     {
         SetVelocity();
+        SetDirection();
         Move(gameTime);
         SetSpritePosition();
         HandleAnimationState();
@@ -80,7 +88,7 @@ public class PlayerCharacter
 
         Velocity = Vector2.Zero;
 
-        if (state.IsKeyDown(Keys.W)) //UP
+        if (state.IsKeyDown(Keys.W)) 
         {
             Velocity.Y = -MoveSpeed;
         }
@@ -96,7 +104,6 @@ public class PlayerCharacter
         {
             Velocity.X = MoveSpeed;
         }
-
         if (state.IsKeyDown(Keys.Space))
         {
             _attackButtonPressed = true;
@@ -122,11 +129,60 @@ public class PlayerCharacter
         _animatedSprite.Position = this.Position;
     }
 
+    private void SetDirection()
+    {
+        if (Velocity.X > 0)
+        {
+            _characterDirection = Direction.Right;
+        }
+        else if (Velocity.X < 0)
+        {
+            _characterDirection = Direction.Left;
+        }
+        else if (Velocity.Y < 0)
+        {
+            _characterDirection = Direction.Right;
+        }
+        else if (Velocity.Y > 0)
+        {
+            _characterDirection = Direction.Left;
+        }
+    }
+
     private AnimationStates GetNextAnimationState()
     {
-        if (Math.Abs(Velocity.X) <= 0.0001f && Math.Abs(Velocity.Y) <= 0.0001f)
+        if (_attackFlag && Velocity.X > 0)
         {
-            return AnimationStates.Idle;
+            _attackFlag = false;
+            return AnimationStates.AttackRight;
+        }
+        else if (_attackFlag && Velocity.X < 0)
+        {
+            _attackFlag = false;
+            return AnimationStates.AttackLeft;
+        }
+        else if (_attackFlag)
+        {
+            _attackFlag = false;
+            if (_characterDirection == Direction.Right)
+            {
+                return AnimationStates.AttackRight;
+            }
+            else
+            {
+                return AnimationStates.AttackLeft;
+            }
+        }
+        else if (Math.Abs(Velocity.X) <= 0.0001f && Math.Abs(Velocity.Y) <= 0.0001f)
+        {
+            if (_characterDirection == Direction.Right)
+            {
+                return AnimationStates.IdleRight;
+            }
+            else
+            {
+                return AnimationStates.IdleLeft;
+            }
         }
         else if (Velocity.X > 0)
         {
@@ -145,42 +201,43 @@ public class PlayerCharacter
             return AnimationStates.RunLeft;
         }
 
-        return AnimationStates.Idle;
+        return AnimationStates.IdleRight;
     }
 
-    private void HandleAnimationState()
+    private void SetAnimatedSpriteAnimation(AnimationStates state)
     {
-        var state = GetNextAnimationState();
-        if (state == _animationState) return;
-
-        _animatedSprite.Stop();
-
-        _animationState = state;
-        switch (_animationState)
+        switch (state)
         {
-            case (AnimationStates.Idle):
+            case (AnimationStates.IdleRight):
                 _animatedSprite.AnimationRow = 0;
                 _animatedSprite.MaxFrame = 4;
                 _animatedSprite.Period = 250;
-                _animatedSprite.Loop = false;
+                _animatedSprite.Loop = true;
+                _waitToFinish = false;
+                break;
+            case (AnimationStates.IdleLeft):
+                _animatedSprite.AnimationRow = 1;
+                _animatedSprite.MaxFrame = 4;
+                _animatedSprite.Period = 250;
+                _animatedSprite.Loop = true;
                 _waitToFinish = false;
                 break;
             case (AnimationStates.RunRight):
-                _animatedSprite.AnimationRow = 1;
+                _animatedSprite.AnimationRow = 2;
                 _animatedSprite.MaxFrame = 6;
-                _animatedSprite.Period = 150;
+                _animatedSprite.Period = 100;
                 _animatedSprite.Loop = true;
                 _waitToFinish = false;
                 break;
             case (AnimationStates.RunLeft):
-                _animatedSprite.AnimationRow = 2;
+                _animatedSprite.AnimationRow = 3;
                 _animatedSprite.MaxFrame = 6;
-                _animatedSprite.Period = 150;
+                _animatedSprite.Period = 100;
                 _animatedSprite.Loop = true;
                 _waitToFinish = false;
                 break;
             case (AnimationStates.AttackRight):
-                _animatedSprite.AnimationRow = 3;
+                _animatedSprite.AnimationRow = 4;
                 _animatedSprite.MaxFrame = 3;
                 _animatedSprite.Period = 100;
                 _animatedSprite.Loop = false;
@@ -188,7 +245,7 @@ public class PlayerCharacter
                 _animatedSprite.StartFrame = 1;
                 break;
             case (AnimationStates.AttackLeft):
-                _animatedSprite.AnimationRow = 4;
+                _animatedSprite.AnimationRow = 5;
                 _animatedSprite.MaxFrame = 3;
                 _animatedSprite.Period = 100;
                 _animatedSprite.Loop = false;
@@ -198,7 +255,70 @@ public class PlayerCharacter
             default:
                 break;
         }
+    }
 
-        _animatedSprite.Start();
+    private void HandleAnimationState()
+    {
+        var state = GetNextAnimationState();
+
+        switch (_animationState)
+        {
+            case (AnimationStates.IdleRight):
+                if (state != _animationState)
+                {
+                    _animatedSprite.Stop();
+                    _animationState = state;
+                    SetAnimatedSpriteAnimation(_animationState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.IdleLeft):
+                if (state != _animationState)
+                {
+                    _animatedSprite.Stop();
+                    _animationState = state;
+                    SetAnimatedSpriteAnimation(_animationState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.RunRight):
+                if (state != _animationState)
+                {
+                    _animatedSprite.Stop();
+                    _animationState = state;
+                    SetAnimatedSpriteAnimation(_animationState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.RunLeft):
+                if (state != _animationState)
+                {
+                    _animatedSprite.Stop();
+                    _animationState = state;
+                    SetAnimatedSpriteAnimation(_animationState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.AttackRight):
+                if (state != _animationState && _animatedSprite.IsRunning() == false)
+                {
+                    _animatedSprite.Stop();
+                    _animationState = state;
+                    SetAnimatedSpriteAnimation(_animationState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.AttackLeft):
+                if (state != _animationState && _animatedSprite.IsRunning() == false)
+                {
+                    _animatedSprite.Stop();
+                    _animationState = state;
+                    SetAnimatedSpriteAnimation(_animationState);
+                    _animatedSprite.Start();
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
