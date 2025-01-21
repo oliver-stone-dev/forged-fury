@@ -5,8 +5,10 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/Level.png</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/PlayerSheet.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>

@@ -3,72 +3,81 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 
-namespace forged_fury
+namespace forged_fury;
+
+public class Game1 : Game
 {
-    public class Game1 : Game
+    private GraphicsDeviceManager _graphics;
+    private SpriteBatch _spriteBatch;
+    private Texture2D _windowBackground;
+    private Texture2D _levelBackgroundSprite;
+    private Texture2D _playerSpriteSheet;
+    private const int _levelWidth = 448;
+    private const int _levelHeight = 288;
+    private const float _spriteScale = 2f;
+
+    private List<Sprite> _sprites = new();
+
+    public Game1()
     {
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-        private Texture2D _windowBackground;
-        private Texture2D _levelBackground;
-        private const int _backgroundWidth = 448;
-        private const int _backgroundHeight = 288;
-        private const float _spriteScaleAmount = 1.4f;
+        _graphics = new GraphicsDeviceManager(this);
+        Content.RootDirectory = "Content";
+        IsMouseVisible = true;
+    }
 
-        public Game1()
-        {
-            _graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
-        }
+    protected override void Initialize()
+    {
+        _graphics.IsFullScreen = false;
+        _graphics.PreferredBackBufferWidth = 1280;
+        _graphics.PreferredBackBufferHeight = 720;
+        _graphics.ApplyChanges();
 
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
+        base.Initialize();
+    }
 
-            base.Initialize();
-        }
+    protected override void LoadContent()
+    {
+        _spriteBatch = new SpriteBatch(GraphicsDevice);
+        _levelBackgroundSprite = Content.Load<Texture2D>("Level");
+        _windowBackground = new Texture2D(GraphicsDevice, 1, 1);
+        _windowBackground.SetData(new Color[] { Color.White });
 
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _levelBackground = Content.Load<Texture2D>("Level");
-            _windowBackground = new Texture2D(GraphicsDevice, 1, 1);
-            _windowBackground.SetData(new Color[] { Color.White });
-        }
+        //Background sprite
+        var background = new Sprite(_spriteBatch, _windowBackground);
+        background.X = _graphics.PreferredBackBufferWidth / 2;
+        background.Y = _graphics.PreferredBackBufferHeight / 2;
+        background.Width = _graphics.PreferredBackBufferWidth;
+        background.Height = _graphics.PreferredBackBufferHeight;
+        background.Color = Color.Black;
 
-        protected override void Update(GameTime gameTime)
-        {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+        //Level Sprite
+        var level = new Sprite(_spriteBatch, _levelBackgroundSprite);
+        level.X = _graphics.PreferredBackBufferWidth / 2;
+        level.Y = _graphics.PreferredBackBufferHeight / 2;
+        level.Scale = _spriteScale;
 
-            // TODO: Add your update logic here
+        _sprites.Add(background);
+        _sprites.Add(level);
+    }
 
-            base.Update(gameTime);
-        }
+    protected override void Update(GameTime gameTime)
+    {
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            Exit();
 
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+        base.Update(gameTime);
+    }
 
-            // TODO: Add your drawing code here
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(_windowBackground, 
-                              new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), 
-                              Color.Black);
+    protected override void Draw(GameTime gameTime)
+    {
+        GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            int width = Convert.ToInt32(_backgroundWidth * _spriteScaleAmount);
-            int height = Convert.ToInt32(_backgroundHeight * _spriteScaleAmount);
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        _sprites.ForEach(s => s.Draw());
+        _spriteBatch.End();
 
-            _spriteBatch.Draw(_levelBackground,new Rectangle(_graphics.PreferredBackBufferWidth/2-(width / 2), 
-                                                             _graphics.PreferredBackBufferHeight/2 - (height / 2),
-                                                             width,
-                                                             height),
-                                                             Color.White);
-            _spriteBatch.End();
-
-            base.Draw(gameTime);
-        }
+        base.Draw(gameTime);
     }
 }
