@@ -18,7 +18,8 @@ public class Game1 : Game
     private const int _levelHeight = 288;
     private const float _spriteScale = 2f;
 
-    private List<Sprite> _sprites = new();
+    private List<Sprite> _spritesToDraw = new();
+    private List<AnimatedSprite> _spritesToAnimate = new();
 
     public Game1()
     {
@@ -43,9 +44,10 @@ public class Game1 : Game
         _levelBackgroundSprite = Content.Load<Texture2D>("Level");
         _windowBackground = new Texture2D(GraphicsDevice, 1, 1);
         _windowBackground.SetData(new Color[] { Color.White });
+        _playerSpriteSheet = Content.Load<Texture2D>("PlayerSheet");
 
         //Background sprite
-        var background = new Sprite(_spriteBatch, _windowBackground);
+        var background = new Sprite(_windowBackground);
         background.X = _graphics.PreferredBackBufferWidth / 2;
         background.Y = _graphics.PreferredBackBufferHeight / 2;
         background.Width = _graphics.PreferredBackBufferWidth;
@@ -53,19 +55,36 @@ public class Game1 : Game
         background.Color = Color.Black;
 
         //Level Sprite
-        var level = new Sprite(_spriteBatch, _levelBackgroundSprite);
+        var level = new Sprite(_levelBackgroundSprite);
         level.X = _graphics.PreferredBackBufferWidth / 2;
         level.Y = _graphics.PreferredBackBufferHeight / 2;
         level.Scale = _spriteScale;
 
-        _sprites.Add(background);
-        _sprites.Add(level);
+        //Player Sprite
+        var player = new AnimatedSprite(_playerSpriteSheet);
+        player.X = _graphics.PreferredBackBufferWidth / 2;
+        player.Y = _graphics.PreferredBackBufferHeight / 2;
+        player.FrameHeight = 64;
+        player.FrameWidth = 64;
+        player.Width = 64;
+        player.Height = 64;
+        player.Scale = _spriteScale;
+        player.MaxFrame = 4;
+        player.Period = 250;
+
+        _spritesToDraw.Add(background);
+        _spritesToDraw.Add(level);
+        _spritesToDraw.Add(player);
+
+        _spritesToAnimate.Add(player);
     }
 
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        _spritesToAnimate.ForEach(s => s.Update(gameTime));
 
         base.Update(gameTime);
     }
@@ -75,7 +94,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _sprites.ForEach(s => s.Draw());
+        _spritesToDraw.ForEach(s => s.Draw(_spriteBatch));
         _spriteBatch.End();
 
         base.Draw(gameTime);

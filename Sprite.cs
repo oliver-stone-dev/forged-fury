@@ -11,8 +11,7 @@ namespace forged_fury;
 
 public class Sprite
 {
-    private readonly SpriteBatch _spriteBatch;
-    private readonly Texture2D _texture2D;
+    protected readonly Texture2D _texture2D;
     
     public int X { get; set; }
     public int Y { get; set; }
@@ -21,10 +20,9 @@ public class Sprite
     public double Scale { get; set; }
     public Color Color { get; set; }
 
-    public Sprite(SpriteBatch spriteBatch, Texture2D texture)
+    public Sprite(Texture2D texture)
     {
         _texture2D = texture;
-        _spriteBatch = spriteBatch;
         X = 0;
         Y = 0;
         Width = _texture2D.Width;
@@ -33,12 +31,12 @@ public class Sprite
         Color = Color.White;
     }
 
-    public virtual void Draw()
+    public virtual void Draw(SpriteBatch spriteBatch)
     {
         int scaledWidth = Convert.ToInt32(Width * Scale);
         int scaledHeight = Convert.ToInt32(Height * Scale);
 
-        _spriteBatch.Draw(_texture2D,
+        spriteBatch.Draw(_texture2D,
                           new Rectangle(X - (scaledWidth / 2), Y - (scaledHeight / 2), scaledWidth, scaledHeight),
                           Color);
     }
