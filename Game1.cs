@@ -19,7 +19,7 @@ public class Game1 : Game
     private const float _spriteScale = 2f;
 
     private List<Sprite> _spritesToDraw = new();
-    private List<PlayerCharacter> _playersToDrawer = new();
+    private List<Character> _playersToDrawer = new();
 
     public Game1()
     {
@@ -64,7 +64,7 @@ public class Game1 : Game
         _spritesToDraw.Add(level);
 
         //Player Sprite
-        var player = new PlayerCharacter(_playerSpriteSheet);
+        var player = new PlayerController(_playerSpriteSheet);
         player.Position.X = _graphics.PreferredBackBufferWidth / 2;
         player.Position.Y = _graphics.PreferredBackBufferHeight / 2;
 

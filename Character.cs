@@ -12,7 +12,7 @@ using static forged_fury.AnimationController;
 
 namespace forged_fury;
 
-public class PlayerCharacter
+public class Character
 {
     private enum Direction
     {
@@ -25,8 +25,7 @@ public class PlayerCharacter
     private AnimationController _animationController;
     private readonly AnimatedSprite _animatedSprite;
 
-    private bool _attackFlag = false;
-    private bool _attackButtonPressed = false;
+    protected bool _attackFlag = false;
 
     private Direction _characterDirection = Direction.Right;
 
@@ -37,7 +36,7 @@ public class PlayerCharacter
     public float MoveSpeed { get; set; }
 
 
-    public PlayerCharacter(Texture2D texture2D)
+    public Character(Texture2D texture2D)
     {
         MoveSpeed = _defaultMoveSpeed;
         Position = Vector2.Zero;
@@ -55,13 +54,12 @@ public class PlayerCharacter
         _animationController = new(_animatedSprite);
     }
 
-    public void Update(GameTime gameTime)
+    public virtual void Update(GameTime gameTime)
     {
-        SetVelocity();
         SetDirection();
-        Move(gameTime);
         SetSpritePosition();
         SetAnimatorState();
+        Move(gameTime);
         _animationController.Update(gameTime);
         _animatedSprite.Update(gameTime);
     }
@@ -69,42 +67,6 @@ public class PlayerCharacter
     public void Draw(SpriteBatch spriteBatch)
     {
         _animatedSprite.Draw(spriteBatch);
-    }
-
-    private void SetVelocity()
-    {
-        var state = Keyboard.GetState();
-
-        Velocity = Vector2.Zero;
-
-        if (state.IsKeyDown(Keys.W)) 
-        {
-            Velocity.Y = -MoveSpeed;
-        }
-        if (state.IsKeyDown(Keys.S))
-        {
-            Velocity.Y = MoveSpeed;
-        }
-        if (state.IsKeyDown(Keys.A))
-        {
-            Velocity.X = -MoveSpeed;
-        }
-        if (state.IsKeyDown(Keys.D))
-        {
-            Velocity.X = MoveSpeed;
-        }
-        if (state.IsKeyDown(Keys.Space))
-        {
-            _attackButtonPressed = true;
-        }
-        if (state.IsKeyUp(Keys.Space))
-        {
-            if (_attackButtonPressed)
-            {
-                _attackFlag = true;
-                _attackButtonPressed = false;
-            }
-        }
     }
 
     private void Move(GameTime gameTime)
