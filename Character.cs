@@ -118,7 +118,7 @@ public class Character
             _attackFlag = false;
             if (_characterDirection == Direction.Right)
             {
-                _animationController.SetNextState(AnimationStates.AttackRight);
+                 _animationController.SetNextState(AnimationStates.AttackRight);
             }
             else
             {

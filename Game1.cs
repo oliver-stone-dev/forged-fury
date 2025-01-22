@@ -14,6 +14,7 @@ public class Game1 : Game
     private Texture2D _windowBackground;
     private Texture2D _levelBackgroundSprite;
     private Texture2D _playerSpriteSheet;
+    private Texture2D _enemyAdvancedSheet;
     private const int _levelWidth = 448;
     private const int _levelHeight = 288;
     private const float _spriteScale = 2f;
@@ -45,6 +46,7 @@ public class Game1 : Game
         _windowBackground = new Texture2D(GraphicsDevice, 1, 1);
         _windowBackground.SetData(new Color[] { Color.White });
         _playerSpriteSheet = Content.Load<Texture2D>("PlayerSheet");
+        _enemyAdvancedSheet = Content.Load<Texture2D>("EnemyAdvancedSheet");
 
         //Background sprite
         var background = new Sprite(_windowBackground);
@@ -68,7 +70,25 @@ public class Game1 : Game
         player.Position.X = _graphics.PreferredBackBufferWidth / 2;
         player.Position.Y = _graphics.PreferredBackBufferHeight / 2;
 
+        var enemy = new EnemyController(_enemyAdvancedSheet, player);
+        enemy.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
+        enemy.Position.Y = (_graphics.PreferredBackBufferHeight / 2) + 50;
+        enemy.MoveSpeed = 70f;
+
+        var enemy2 = new EnemyController(_enemyAdvancedSheet, player);
+        enemy2.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
+        enemy2.Position.Y = (_graphics.PreferredBackBufferHeight / 2);
+        enemy2.MoveSpeed = 70f;
+
+        var enemy3 = new EnemyController(_enemyAdvancedSheet, player);
+        enemy3.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
+        enemy3.Position.Y = (_graphics.PreferredBackBufferHeight / 2) - 50;
+        enemy3.MoveSpeed = 70f;
+
         _playersToDrawer.Add(player);
+        _playersToDrawer.Add(enemy);
+        //_playersToDrawer.Add(enemy2);
+        //_playersToDrawer.Add(enemy3);
     }
 
     protected override void Update(GameTime gameTime)
