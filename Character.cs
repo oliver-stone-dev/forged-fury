@@ -14,7 +14,7 @@ namespace forged_fury;
 
 public class Character : GameObject
 {
-    private enum Direction
+    public enum Direction
     {
         Left,
         Right
@@ -28,7 +28,7 @@ public class Character : GameObject
 
     protected bool _attackFlag = false;
 
-    private Direction _characterDirection = Direction.Right;
+    protected Direction _characterDirection = Direction.Right;
 
     public Vector2 Position;
     public Vector2 Velocity;
@@ -59,6 +59,7 @@ public class Character : GameObject
         _characterCollider.Position = Position;
         _characterCollider.Height = _animatedSprite.Height;
         _characterCollider.Width = _animatedSprite.Width;
+
     }
 
     public override void Update(GameTime gameTime)
@@ -72,6 +73,7 @@ public class Character : GameObject
         _characterCollider.Position = Position;
         _characterCollider.Height = _animatedSprite.Height;
         _characterCollider.Width = _animatedSprite.Width;
+        _characterCollider.Enabled = true;
     }
 
     public override void Draw(SpriteBatch spriteBatch)

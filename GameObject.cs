@@ -27,6 +27,12 @@ public class GameObject : IDisposable
 
     }
 
+    public void Destroy()
+    {
+        GameObjectManager.Remove(this);
+        ColliderManager.RemoveParentColliders(this);
+    }
+
     public void Dispose()
     {
         GameObjectManager.Remove(this);

@@ -13,6 +13,7 @@ namespace forged_fury;
 public class PlayerController : Character
 {
     private bool _attackButtonPressed = false;
+    private bool _attacking = false;
 
     private Collider _attackCollider;
 
@@ -20,17 +21,28 @@ public class PlayerController : Character
     {
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
-        _attackCollider.Height = 10;
-        _attackCollider.Width = 50;
+        _attackCollider.Height = 50;
+        _attackCollider.Width = 10;
+
 
         _characterCollider.OnCollisionAction = OnCharacterCollision;
+        _attackCollider.OnCollisionAction = OnAttackCollision;
     }
 
     public override void Update(GameTime gameTime)
     {
-        _attackCollider.Position = Position;
-
-
+        if (_characterDirection == Character.Direction.Right)
+        {
+            var pos = Position;
+            pos.X += 40;
+            _attackCollider.Position = pos;
+        }
+        else
+        {
+            var pos = Position;
+            pos.X -= 40;
+            _attackCollider.Position = pos;
+        }
 
         SetVelocity();
         base.Update(gameTime);
@@ -66,19 +78,29 @@ public class PlayerController : Character
         {
             if (_attackButtonPressed)
             {
+                _attackCollider.Enabled = true;
                 _attackFlag = true;
                 _attackButtonPressed = false;
+                _attacking = true;
             }
         }
     }
 
     private void OnCharacterCollision(Collider collider)
     {
-        Debug.WriteLine($"Character collision with {collider.Parent.Name}");
+        //collider.Parent.Destroy();
+        //Debug.WriteLine($"Character collision with {collider.Parent.Name}");
     }
 
-    private void OnAttackCollidion(Collider collider)
+    private void OnAttackCollision(Collider collider)
     {
-        Debug.WriteLine($"Attack collision with {collider.Parent.Name}");
+        if (_attacking)
+        {
+            collider.Parent.Destroy();
+            _attackCollider.Enabled = false;
+        }
+
+        _attacking = false;
+        //Debug.WriteLine($"Attack collision with {collider.Parent.Name}");
     }
 }

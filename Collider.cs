@@ -25,7 +25,7 @@ public class Collider : IDisposable
 
     public Collider(GameObject parent)
     {
-        Enabled = true;
+        Enabled = false;
         Parent = parent;
         ColliderManager.Add(this);
     }

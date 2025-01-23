@@ -49,9 +49,14 @@ public static class ColliderManager
         _colliders.Remove(collider);
     }
 
+    public static void RemoveParentColliders(GameObject gameObject)
+    {
+        _colliders.RemoveAll(c => c.Parent == gameObject);
+    }
+
     private static void CheckForCollisions()
     {
-        foreach(var collider in _colliders)
+        foreach(var collider in _colliders.ToList())
         {
             collider.Update(); //debug
 

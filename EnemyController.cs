@@ -31,7 +31,7 @@ public class EnemyController : Character
 
     public override void Update(GameTime gameTime)
     {
-        FollowTarget();
+        //FollowTarget();
         ResetAttack(gameTime);
         base.Update(gameTime);
     }
