@@ -15,53 +15,23 @@ public class Collider : IDisposable
     public int Width { get; set; }
     public int Height { get; set; }
 
-    public Action OnCollisionEnterAction;
+    public Action<Collider> OnCollisionAction;
 
-    public Action OnCollisionExitAction;
+    public GameObject Parent { get; set; }
 
-    public bool HasCollided { get; set; }
-
-    private bool CollisionEnterFlag = false;
-
-    public Collider()
+    public Collider(GameObject parent)
     {
-        HasCollided = false;
+        Parent = parent;
         ColliderManager.Add(this);
     }
 
-    public void Update()
+    public void OnCollision(Collider collider)
     {
-        if (HasCollided)
-        {
-            if (CollisionEnterFlag == false)
-            {
-                CollisionEnterFlag = true;
-                OnCollisionEnter();
-            }
-        }
-        else
-        {
-            if (CollisionEnterFlag)
-            {
-                CollisionEnterFlag = false;
-                OnCollisionExit();
-            }
-        }
-    }
-
-    private void OnCollisionEnter()
-    {
-       OnCollisionEnterAction?.Invoke();
-    }
-
-    private void OnCollisionExit()
-    {
-        OnCollisionExitAction?.Invoke();
+       OnCollisionAction?.Invoke(collider);
     }
 
     public void Dispose()
     {
         ColliderManager.Remove(this);
     }
-
 }

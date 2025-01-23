@@ -74,11 +74,13 @@ public class Game1 : Game
         var player = new PlayerController(_playerSpriteSheet);
         player.Position.X = _graphics.PreferredBackBufferWidth / 2;
         player.Position.Y = _graphics.PreferredBackBufferHeight / 2;
+        player.Name = "Player";
 
         var enemy = new EnemyController(_enemyAdvancedSheet, player);
         enemy.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
         enemy.Position.Y = (_graphics.PreferredBackBufferHeight / 2) + 50;
         enemy.MoveSpeed = 70f;
+        enemy.Name = "Enemy";
 
         /*        var enemy2 = new EnemyController(_enemyAdvancedSheet, player);
                 enemy2.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;

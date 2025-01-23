@@ -14,10 +14,9 @@ public class PlayerController : Character
 {
     private bool _attackButtonPressed = false;
 
-
     public PlayerController(Texture2D texture2D) : base(texture2D)
     {
-        _characterCollider.OnCollisionEnterAction = OnCollision;
+        _characterCollider.OnCollisionAction = OnCollision;
     }
 
     public override void Update(GameTime gameTime)
@@ -62,8 +61,9 @@ public class PlayerController : Character
         }
     }
 
-    private void OnCollision()
+    private void OnCollision(Collider collider)
     {
-        Debug.WriteLine("Collision!");
+ 
+        Debug.WriteLine($"Collision with {collider.Parent.Name}");
     }
 }

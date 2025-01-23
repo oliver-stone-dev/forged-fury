@@ -12,7 +12,7 @@ using static forged_fury.AnimationController;
 
 namespace forged_fury;
 
-public class Character
+public class Character : GameObject
 {
     private enum Direction
     {
@@ -55,7 +55,7 @@ public class Character
 
         _animationController = new(_animatedSprite);
 
-        _characterCollider = new Collider();
+        _characterCollider = new Collider(this);
         _characterCollider.Position = Position;
         _characterCollider.Height = _animatedSprite.Height;
         _characterCollider.Width = _animatedSprite.Width;

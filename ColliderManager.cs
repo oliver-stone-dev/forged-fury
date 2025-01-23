@@ -38,14 +38,8 @@ public static class ColliderManager
         {
             if (CheckForCollision(collider, out Collider hit))
             {
-                collider.HasCollided = true;
+                collider.OnCollision(hit);
             }
-            else
-            {
-                collider.HasCollided = false;
-            }
-
-            collider.Update();
         }
     }
 
