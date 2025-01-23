@@ -19,7 +19,7 @@ public class Sprite
     public double Scale { get; set; }
     public Color Color { get; set; }
 
-    public Sprite(Texture2D texture)
+    public Sprite(Texture2D texture) : base()
     {
         _texture2D = texture;
         Position = Vector2.Zero;

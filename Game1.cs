@@ -21,9 +21,6 @@ public class Game1 : Game
     private const int _levelHeight = 288;
     private const float _spriteScale = 2f;
 
-    private List<Sprite> _spritesToDraw = new();
-    private List<Character> _playersToDrawer = new();
-
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -52,23 +49,10 @@ public class Game1 : Game
 
         _debugTexture = new Texture2D(GraphicsDevice, 1, 1);
         _debugTexture.SetData(new Color[] { Color.White });
+        ColliderManager.DebugTextue = _debugTexture;
 
-        //Background sprite
-        var background = new Sprite(_windowBackground);
-        background.Position.X = _graphics.PreferredBackBufferWidth / 2;
-        background.Position.Y = _graphics.PreferredBackBufferHeight / 2;
-        background.Width = _graphics.PreferredBackBufferWidth;
-        background.Height = _graphics.PreferredBackBufferHeight;
-        background.Color = Color.Black;
-
-        //Level Sprite
-        var level = new Sprite(_levelBackgroundSprite);
-        level.Position.X = _graphics.PreferredBackBufferWidth / 2;
-        level.Position.Y = _graphics.PreferredBackBufferHeight / 2;
-        level.Scale = _spriteScale;
-
-        _spritesToDraw.Add(background);
-        _spritesToDraw.Add(level);
+        //Environment
+        var environment = new Environment(_windowBackground, _levelBackgroundSprite, _graphics);
 
         //Player Sprite
         var player = new PlayerController(_playerSpriteSheet);
@@ -82,21 +66,6 @@ public class Game1 : Game
         enemy.MoveSpeed = 70f;
         enemy.Name = "Enemy";
 
-        /*        var enemy2 = new EnemyController(_enemyAdvancedSheet, player);
-                enemy2.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
-                enemy2.Position.Y = (_graphics.PreferredBackBufferHeight / 2);
-                enemy2.MoveSpeed = 70f;
-
-                var enemy3 = new EnemyController(_enemyAdvancedSheet, player);
-                enemy3.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
-                enemy3.Position.Y = (_graphics.PreferredBackBufferHeight / 2) - 50;
-                enemy3.MoveSpeed = 70f;*/
-
-        _playersToDrawer.Add(player);
-        _playersToDrawer.Add(enemy);
-        //_playersToDrawer.Add(enemy2);
-        //_playersToDrawer.Add(enemy3);
-
     }
 
     protected override void Update(GameTime gameTime)
@@ -105,8 +74,7 @@ public class Game1 : Game
             Exit();
 
         ColliderManager.Update(gameTime);
-
-        _playersToDrawer.ForEach(s => s.Update(gameTime));
+        GameObjectManager.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -116,8 +84,8 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _spritesToDraw.ForEach(s => s.Draw(_spriteBatch));
-        _playersToDrawer.ForEach(p => p.Draw(_spriteBatch));
+        GameObjectManager.Draw(_spriteBatch);
+        ColliderManager.Draw(_spriteBatch);//draw collider debugs
         _spriteBatch.End();
 
         base.Draw(gameTime);

@@ -38,7 +38,7 @@ public class Character : GameObject
     public float MoveSpeed { get; set; }
 
 
-    public Character(Texture2D texture2D)
+    public Character(Texture2D texture2D) : base()
     {
         MoveSpeed = _defaultMoveSpeed;
         Position = Vector2.Zero;
@@ -61,7 +61,7 @@ public class Character : GameObject
         _characterCollider.Width = _animatedSprite.Width;
     }
 
-    public virtual void Update(GameTime gameTime)
+    public override void Update(GameTime gameTime)
     {
         SetDirection();
         SetSpritePosition();
@@ -74,7 +74,7 @@ public class Character : GameObject
         _characterCollider.Width = _animatedSprite.Width;
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public override void Draw(SpriteBatch spriteBatch)
     {
         _animatedSprite.Draw(spriteBatch);
     }

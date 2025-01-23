@@ -14,13 +14,24 @@ public class PlayerController : Character
 {
     private bool _attackButtonPressed = false;
 
+    private Collider _attackCollider;
+
     public PlayerController(Texture2D texture2D) : base(texture2D)
     {
-        _characterCollider.OnCollisionAction = OnCollision;
+        _attackCollider = new(this);
+        _attackCollider.Enabled = false;
+        _attackCollider.Height = 10;
+        _attackCollider.Width = 50;
+
+        _characterCollider.OnCollisionAction = OnCharacterCollision;
     }
 
     public override void Update(GameTime gameTime)
     {
+        _attackCollider.Position = Position;
+
+
+
         SetVelocity();
         base.Update(gameTime);
     }
@@ -61,9 +72,13 @@ public class PlayerController : Character
         }
     }
 
-    private void OnCollision(Collider collider)
+    private void OnCharacterCollision(Collider collider)
     {
- 
-        Debug.WriteLine($"Collision with {collider.Parent.Name}");
+        Debug.WriteLine($"Character collision with {collider.Parent.Name}");
+    }
+
+    private void OnAttackCollidion(Collider collider)
+    {
+        Debug.WriteLine($"Attack collision with {collider.Parent.Name}");
     }
 }

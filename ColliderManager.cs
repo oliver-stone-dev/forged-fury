@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,13 +18,29 @@ public static class ColliderManager
 
     public static Vector3 CollisionArea { get; set; }
 
+    public static Texture2D DebugTextue;
+
     public static void Update(GameTime gameTime)
     {
         CheckForCollisions();
     }
 
+    public static void Draw(SpriteBatch spriteBatch)
+    {
+        foreach(var collider in _colliders)
+        {
+            collider.DebugSprite.Draw(spriteBatch);
+        }
+    }
+
     public static void Add(Collider collider)
     {
+        if (DebugTextue != null)
+        {
+            collider.DebugSprite = new Sprite(DebugTextue);
+            collider.DebugSprite.Color = new Color(Color.Green, 0.55f);
+        }
+
         _colliders.Add(collider);
     }
 
@@ -36,6 +53,10 @@ public static class ColliderManager
     {
         foreach(var collider in _colliders)
         {
+            collider.Update(); //debug
+
+            if (collider.Enabled == false) continue;
+
             if (CheckForCollision(collider, out Collider hit))
             {
                 collider.OnCollision(hit);
@@ -51,6 +72,8 @@ public static class ColliderManager
         foreach (var colliderToCheck in _colliders)
         {
             if (colliderToCheck == collider) continue;
+            if (colliderToCheck.Enabled == false) continue;
+            if (collider.Parent == colliderToCheck.Parent) continue;
 
             var l2 = GetTopLeftPoint(colliderToCheck);
             var r2 = GetBottomRightPoint(colliderToCheck);
