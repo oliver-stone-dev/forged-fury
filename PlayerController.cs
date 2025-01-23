@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,10 @@ public class PlayerController : Character
 {
     private bool _attackButtonPressed = false;
 
+
     public PlayerController(Texture2D texture2D) : base(texture2D)
     {
+        _characterCollider.OnCollisionEnterAction = OnCollision;
     }
 
     public override void Update(GameTime gameTime)
@@ -57,5 +60,10 @@ public class PlayerController : Character
                 _attackButtonPressed = false;
             }
         }
+    }
+
+    private void OnCollision()
+    {
+        Debug.WriteLine("Collision!");
     }
 }

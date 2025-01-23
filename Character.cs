@@ -24,6 +24,7 @@ public class Character
 
     private AnimationController _animationController;
     private readonly AnimatedSprite _animatedSprite;
+    protected Collider _characterCollider;
 
     protected bool _attackFlag = false;
 
@@ -31,6 +32,7 @@ public class Character
 
     public Vector2 Position;
     public Vector2 Velocity;
+    private Texture2D texture2D;
 
     public float Scale { get; set; }
     public float MoveSpeed { get; set; }
@@ -52,6 +54,11 @@ public class Character
         _animatedSprite.Scale = Scale;
 
         _animationController = new(_animatedSprite);
+
+        _characterCollider = new Collider();
+        _characterCollider.Position = Position;
+        _characterCollider.Height = _animatedSprite.Height;
+        _characterCollider.Width = _animatedSprite.Width;
     }
 
     public virtual void Update(GameTime gameTime)
@@ -62,6 +69,9 @@ public class Character
         Move(gameTime);
         _animationController.Update(gameTime);
         _animatedSprite.Update(gameTime);
+        _characterCollider.Position = Position;
+        _characterCollider.Height = _animatedSprite.Height;
+        _characterCollider.Width = _animatedSprite.Width;
     }
 
     public void Draw(SpriteBatch spriteBatch)
