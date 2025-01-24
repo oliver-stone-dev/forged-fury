@@ -60,6 +60,7 @@ public class Game1 : Game
         player.Position.X = _graphics.PreferredBackBufferWidth / 2;
         player.Position.Y = _graphics.PreferredBackBufferHeight / 2;
         player.Name = "Player";
+        player.Health = 100;
 
         var enemy = new EnemyController(_enemyAdvancedSheet, player);
         enemy.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
@@ -71,13 +72,13 @@ public class Game1 : Game
         enemy2.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
         enemy2.Position.Y = (_graphics.PreferredBackBufferHeight / 2) + 0;
         enemy2.MoveSpeed = 30f;
-        enemy2.Name = "Enemy2";
+        enemy2.Name = "Enemy";
 
         var enemy3 = new EnemyController(_enemyAdvancedSheet, player);
         enemy3.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
         enemy3.Position.Y = (_graphics.PreferredBackBufferHeight / 2) + 100;
         enemy3.MoveSpeed = 30f;
-        enemy3.Name = "Enemy3";
+        enemy3.Name = "Enemy";
     }
 
     protected override void Update(GameTime gameTime)

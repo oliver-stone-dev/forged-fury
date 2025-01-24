@@ -11,13 +11,14 @@ namespace forged_fury;
 
 public class EnemyController : Character, IDamagable
 {
-    private double _startingHealth = 10f;
-
     private readonly Character _playerToFollow;
+
+    private int _attackColliderDelayMs = 250;
+    private int _attackDelayTimer = 0;
+    private bool _attackColliderFlag = false;
 
     private int _attackCooldownMs = 1000;
     private bool _hasAttackedFlag = false;
-    private bool _attacking = false;
     private int _attackCooldownTimer = 0;
 
     private Collider _attackCollider;
@@ -27,16 +28,12 @@ public class EnemyController : Character, IDamagable
     private int _attackWidth = 20;
     private int _attackPosition = 40;
 
-    public double Health { get; set; }
-
     public Vector2 TargetPosition { get; set; }
 
     public float MinAttackDistance { get; set; }
 
     public EnemyController(Texture2D texture2D, Character playerToFollow) : base(texture2D)
     {
-        Health = _startingHealth;
-
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
         _attackCollider.Height = _attackHeight;
@@ -44,7 +41,6 @@ public class EnemyController : Character, IDamagable
 
         MinAttackDistance = _defaultAttackDistance;
         _playerToFollow = playerToFollow;
-        _characterCollider.OnCollisionAction = OnCharacterCollision;
         _attackCollider.OnCollisionAction = OnAttackCollision;
     }
 
@@ -75,6 +71,8 @@ public class EnemyController : Character, IDamagable
 
     private void FollowTarget()
     {
+        if (_playerToFollow.Health <= 0) return;
+
         TargetPosition = _playerToFollow.Position;
 
         var distance = Vector2.Distance(Position, TargetPosition);
@@ -97,11 +95,10 @@ public class EnemyController : Character, IDamagable
     {
         if (_hasAttackedFlag) return;
 
-        _attacking = true;
         _attackFlag = true;
         _hasAttackedFlag = true;
         _attackCooldownTimer = _attackCooldownMs;
-        _attackCollider.Enabled = true;
+        _attackDelayTimer = _attackColliderDelayMs;
     }
 
     private void ResetAttack(GameTime gameTime)
@@ -109,11 +106,24 @@ public class EnemyController : Character, IDamagable
         if (_hasAttackedFlag == false) return;
         
         _attackCooldownTimer -= gameTime.ElapsedGameTime.Milliseconds;
+        _attackDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+        if (_attackDelayTimer <= 0)
+        {
+            if (_attackCollider.Enabled == false)
+            {
+                _attackColliderFlag = true;
+                _attackCollider.Enabled = true;
+            }
+        }
+
         if (_attackCooldownTimer <= 0)
         {
             _hasAttackedFlag = false;
             _attackFlag = false;
             _attackCooldownTimer = 0;
+            _attackColliderFlag = false;
+            _attackCollider.Enabled = false;
         }
     }
 
@@ -125,25 +135,22 @@ public class EnemyController : Character, IDamagable
         }
     }
 
-    private void OnCharacterCollision(Collider collider)
-    {
-        if (collider.Name == "solid")
-        {
-            //var sides = ColliderManager.GetCollisionSides(_characterCollider, collider);
-           // Velocity = Vector2.Zero;
-        }
-    }
-
     private void OnAttackCollision(Collider collider)
     {
-        if (_attacking)
+        if (_attackColliderFlag)
         {
-            _attackCollider.Enabled = false;
+            var hit = collider.Parent;
+
+            if (hit.Name == "Player")
+            {
+                var damageable = (IDamagable)hit;
+                if (damageable != null)
+                {
+                    damageable.ApplyDamage(10);
+                }
+                _attackColliderFlag = false;
+            }
         }
-
-        _attacking = false;
-
-        //Debug.WriteLine($"Attack collision with {collider.Parent.Name}");
     }
 
     public void ApplyDamage(double amount)

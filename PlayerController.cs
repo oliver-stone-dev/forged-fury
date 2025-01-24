@@ -10,12 +10,20 @@ using System.Threading.Tasks;
 
 namespace forged_fury;
 
-public class PlayerController : Character
+public class PlayerController : Character, IDamagable
 {
     private bool _attackButtonPressed = false;
     private bool _attacking = false;
 
     private Collider _attackCollider;
+
+    private int _attackColliderDelayMs = 50;
+    private int _attackDelayTimer = 0;
+    private bool _attackColliderFlag = false;
+
+    private int _attackCooldownMs = 100;
+    private bool _hasAttackedFlag = false;
+    private int _attackCooldownTimer = 0;
 
     private int _attackHeight = 50;
     private int _attackWidth = 30;
@@ -35,12 +43,15 @@ public class PlayerController : Character
         _attackCollider.Width = _attackWidth;
 
         _attackCollider.OnCollisionAction = OnAttackCollision;
+
+        _attacking = false;
     }
 
     public override void Update(GameTime gameTime)
     {
         SetColliderAttackPosition();
         SetVelocity(gameTime);
+        ResetAttack(gameTime);
         base.Update(gameTime);
     }
 
@@ -88,17 +99,48 @@ public class PlayerController : Character
         {
             if (_attackButtonPressed)
             {
-                _attackCollider.Enabled = true;
-                _attackFlag = true;
+                Attack();
                 _attackButtonPressed = false;
-                _attacking = true;
             }
+        }
+    }
+
+    private void Attack()
+    {
+        if (_hasAttackedFlag) return;
+
+        _attackFlag = true;
+        _hasAttackedFlag = true;
+        _attackCooldownTimer = _attackCooldownMs;
+        _attackDelayTimer = _attackColliderDelayMs;
+    }
+
+    private void ResetAttack(GameTime gameTime)
+    {
+        if (_hasAttackedFlag == false) return;
+
+        _attackCooldownTimer -= gameTime.ElapsedGameTime.Milliseconds;
+        _attackDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+        if (_attackDelayTimer <= 0)
+        {
+            _attackColliderFlag = true;
+            _attackCollider.Enabled = true;
+        }
+
+        if (_attackCooldownTimer <= 0)
+        {
+            _hasAttackedFlag = false;
+            _attackFlag = false;
+            _attackCooldownTimer = 0;
+            _attackColliderFlag = false;
+            _attackCollider.Enabled = false;
         }
     }
 
     private void OnAttackCollision(Collider collider)
     {
-        if (_attacking)
+        if (_attackColliderFlag)
         {
             var hit = collider.Parent;
 
@@ -109,12 +151,14 @@ public class PlayerController : Character
                 {
                     damageable.ApplyDamage(10);
                 }
+                _attackColliderFlag = false;
             }
-
-            _attackCollider.Enabled = false;
         }
+    }
 
-        _attacking = false;
-        //Debug.WriteLine($"Attack collision with {collider.Parent.Name}");
+    public void ApplyDamage(double amount)
+    {
+        Debug.WriteLine(Health);
+        Health -= amount;
     }
 }

@@ -70,6 +70,11 @@ public static class ColliderManager
     {
         foreach(var collider in _colliders.ToList())
         {
+            collider.TopCollision = false;
+            collider.BottomCollision = false;
+            collider.LeftCollision = false;
+            collider.RightCollision = false;
+
             collider.Update(); //debug
 
             if (collider.Enabled == false) continue;
@@ -92,10 +97,6 @@ public static class ColliderManager
             if (colliderToCheck.Enabled == false) continue;
             if (collider.Parent == colliderToCheck.Parent) continue;
 
-            collider.TopCollision = false;
-            collider.BottomCollision = false;
-            collider.LeftCollision = false;
-            collider.RightCollision = false;
 
             var l2 = GetTopLeftPoint(colliderToCheck);
             var r2 = GetBottomRightPoint(colliderToCheck);
@@ -144,25 +145,23 @@ public static class ColliderManager
     {
         var sides = new List<CollisionSides>();
 
-        var Rect1 = new Rectangle((int)collider1.Position.X,(int)collider1.Position.Y, collider1.Width, collider1.Height);
-        var Rect2 = new Rectangle((int)collider2.Position.X, (int)collider2.Position.Y, collider2.Width, collider2.Height);
+        var rect1 = new Rectangle((int)collider1.Position.X,(int)collider1.Position.Y, collider1.Width, collider1.Height);
+        var rect2 = new Rectangle((int)collider2.Position.X, (int)collider2.Position.Y, collider2.Width, collider2.Height);
 
+        float overlapLeft = rect2.Right - rect1.Left;
+        float overlapRight = rect1.Right - rect2.Left;
+        float overlapTop = rect2.Bottom - rect1.Top;
+        float overlapBottom = rect1.Bottom - rect2.Top;
 
-        if (Rect1.Bottom > Rect2.Bottom)
-        {
-            collider1.TopCollision = true;
-        }
-        if (Rect1.Top < Rect2.Top)
-        {
-            collider1.BottomCollision = true;
-        }
-        if (Rect1.Left > Rect2.Left)
-        {
+        float minOverlap = Math.Min(Math.Min(overlapLeft, overlapRight), Math.Min(overlapTop, overlapBottom));
+
+        if (minOverlap == overlapLeft)
             collider1.LeftCollision = true;
-        }
-        if (Rect1.Right < Rect2.Right)
-        {
+        else if (minOverlap == overlapRight)
             collider1.RightCollision = true;
-        }
+        else if (minOverlap == overlapTop)
+            collider1.TopCollision = true;
+        else if (minOverlap == overlapBottom)
+            collider1.BottomCollision = true;
     }
 }

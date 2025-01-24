@@ -20,6 +20,8 @@ public class Character : GameObject
         Right
     }
 
+    private double _startingHealth = 10f;
+
     private readonly float _defaultMoveSpeed = 40f;
     private readonly float _maxSpeed = 100f;
     private readonly float _stoppedVelocity = 10f;
@@ -36,14 +38,15 @@ public class Character : GameObject
     public Vector2 Velocity;
     private Texture2D texture2D;
 
+    public double Health { get; set; }
     public float Scale { get; set; }
     public float MoveSpeed { get; set; }
-
     public float Friction { get; set; }
-
 
     public Character(Texture2D texture2D) : base()
     {
+        Health = _startingHealth;
+
         MoveSpeed = _defaultMoveSpeed;
         Position = Vector2.Zero;
         Velocity = Vector2.Zero;
@@ -65,7 +68,7 @@ public class Character : GameObject
         _characterCollider.Width = 50;
         _characterCollider.Name = "solid";
 
-        Friction = 0.90f;
+        Friction = 0.8f;
 
         _characterCollider.OnCollisionAction = OnCharacterCollision;
     }
@@ -182,10 +185,6 @@ public class Character : GameObject
 
     private void OnCharacterCollision(Collider collider)
     {
-        if (collider.Name == "solid")
-        {
-            Debug.WriteLine(_characterCollider.TopCollision);
-            // Velocity = Vector2.Zero;
-        }
     }
+
 }
