@@ -9,8 +9,10 @@ using System.Diagnostics;
 
 namespace forged_fury;
 
-public class EnemyController : Character
+public class EnemyController : Character, IDamagable
 {
+    private double _startingHealth = 10f;
+
     private readonly Character _playerToFollow;
 
     private int _attackCooldownMs = 1000;
@@ -20,7 +22,12 @@ public class EnemyController : Character
 
     private Collider _attackCollider;
 
-    public static readonly float _defaultAttackDistance = 50f;
+    private float _defaultAttackDistance = 60f;
+    private int _attackHeight = 40;
+    private int _attackWidth = 20;
+    private int _attackPosition = 40;
+
+    public double Health { get; set; }
 
     public Vector2 TargetPosition { get; set; }
 
@@ -28,10 +35,12 @@ public class EnemyController : Character
 
     public EnemyController(Texture2D texture2D, Character playerToFollow) : base(texture2D)
     {
+        Health = _startingHealth;
+
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
-        _attackCollider.Height = 50;
-        _attackCollider.Width = 10;
+        _attackCollider.Height = _attackHeight;
+        _attackCollider.Width = _attackWidth;
 
         MinAttackDistance = _defaultAttackDistance;
         _playerToFollow = playerToFollow;
@@ -41,22 +50,27 @@ public class EnemyController : Character
 
     public override void Update(GameTime gameTime)
     {
+        SetAttackColliderPosition();
+        FollowTarget();
+        ResetAttack(gameTime);
+        CheckHealth();
+        base.Update(gameTime);
+    }
+
+    private void SetAttackColliderPosition()
+    {
         if (_characterDirection == Character.Direction.Right)
         {
             var pos = Position;
-            pos.X += 40;
+            pos.X += _attackPosition;
             _attackCollider.Position = pos;
         }
         else
         {
             var pos = Position;
-            pos.X -= 40;
+            pos.X -= _attackPosition;
             _attackCollider.Position = pos;
         }
-
-        FollowTarget();
-        ResetAttack(gameTime);
-        base.Update(gameTime);
     }
 
     private void FollowTarget()
@@ -74,8 +88,8 @@ public class EnemyController : Character
         {
             var dif = Vector2.Subtract(Position, TargetPosition);
             var dir = Vector2.Normalize(dif);
-
-            Velocity = -(dir * MoveSpeed);
+            var v = dir * MoveSpeed;
+            Velocity = Vector2.Subtract(Velocity, v);
         }
     }
 
@@ -103,10 +117,21 @@ public class EnemyController : Character
         }
     }
 
+    private void CheckHealth()
+    {
+        if (Health <= 0)
+        {
+            Destroy();
+        }
+    }
+
     private void OnCharacterCollision(Collider collider)
     {
-        //collider.Parent.Destroy();
-        //Debug.WriteLine($"Character collision with {collider.Parent.Name}");
+        if (collider.Name == "solid")
+        {
+            //var sides = ColliderManager.GetCollisionSides(_characterCollider, collider);
+           // Velocity = Vector2.Zero;
+        }
     }
 
     private void OnAttackCollision(Collider collider)
@@ -119,5 +144,10 @@ public class EnemyController : Character
         _attacking = false;
 
         //Debug.WriteLine($"Attack collision with {collider.Parent.Name}");
+    }
+
+    public void ApplyDamage(double amount)
+    {
+        Health -= amount;
     }
 }

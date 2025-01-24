@@ -17,58 +17,68 @@ public class PlayerController : Character
 
     private Collider _attackCollider;
 
+    private int _attackHeight = 50;
+    private int _attackWidth = 30;
+    private int _attackPosition = 55;
+
+    private bool _collisionTop = false;
+    private bool _collisionBottom = false;
+    private bool _collisionLeft = false;
+    private bool _collisionRight = false;
+
+
     public PlayerController(Texture2D texture2D) : base(texture2D)
     {
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
-        _attackCollider.Height = 50;
-        _attackCollider.Width = 10;
+        _attackCollider.Height = _attackHeight;
+        _attackCollider.Width = _attackWidth;
 
-
-        _characterCollider.OnCollisionAction = OnCharacterCollision;
         _attackCollider.OnCollisionAction = OnAttackCollision;
     }
 
     public override void Update(GameTime gameTime)
     {
+        SetColliderAttackPosition();
+        SetVelocity(gameTime);
+        base.Update(gameTime);
+    }
+
+    private void SetColliderAttackPosition()
+    {
         if (_characterDirection == Character.Direction.Right)
         {
             var pos = Position;
-            pos.X += 40;
+            pos.X += _attackPosition;
             _attackCollider.Position = pos;
         }
         else
         {
             var pos = Position;
-            pos.X -= 40;
+            pos.X -= _attackPosition;
             _attackCollider.Position = pos;
         }
-
-        SetVelocity();
-        base.Update(gameTime);
     }
 
-    private void SetVelocity()
+    private void SetVelocity(GameTime gameTime)
     {
         var state = Keyboard.GetState();
 
-        Velocity = Vector2.Zero;
-
         if (state.IsKeyDown(Keys.W))
         {
-            Velocity.Y = -MoveSpeed;
+            Velocity.Y -= MoveSpeed;
         }
         if (state.IsKeyDown(Keys.S))
         {
-            Velocity.Y = MoveSpeed;
+            Velocity.Y += MoveSpeed;
         }
         if (state.IsKeyDown(Keys.A))
         {
-            Velocity.X = -MoveSpeed;
+            Velocity.X -= MoveSpeed;
         }
         if (state.IsKeyDown(Keys.D))
         {
-            Velocity.X = MoveSpeed;
+            Velocity.X += MoveSpeed;
         }
         if (state.IsKeyDown(Keys.Space))
         {
@@ -86,17 +96,21 @@ public class PlayerController : Character
         }
     }
 
-    private void OnCharacterCollision(Collider collider)
-    {
-        //collider.Parent.Destroy();
-        //Debug.WriteLine($"Character collision with {collider.Parent.Name}");
-    }
-
     private void OnAttackCollision(Collider collider)
     {
         if (_attacking)
         {
-            collider.Parent.Destroy();
+            var hit = collider.Parent;
+
+            if (hit.Name == "Enemy")
+            {
+                var damageable = (IDamagable)hit;
+                if (damageable != null)
+                {
+                    damageable.ApplyDamage(10);
+                }
+            }
+
             _attackCollider.Enabled = false;
         }
 

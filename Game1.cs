@@ -50,6 +50,7 @@ public class Game1 : Game
         _debugTexture = new Texture2D(GraphicsDevice, 1, 1);
         _debugTexture.SetData(new Color[] { Color.White });
         ColliderManager.DebugTextue = _debugTexture;
+        ColliderManager.DrawDebugBoxes = true;
 
         //Environment
         var environment = new Environment(_windowBackground, _levelBackgroundSprite, _graphics);
@@ -62,10 +63,21 @@ public class Game1 : Game
 
         var enemy = new EnemyController(_enemyAdvancedSheet, player);
         enemy.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
-        enemy.Position.Y = (_graphics.PreferredBackBufferHeight / 2) + 50;
-        enemy.MoveSpeed = 70f;
+        enemy.Position.Y = (_graphics.PreferredBackBufferHeight / 2) - 100;
+        enemy.MoveSpeed = 30f;
         enemy.Name = "Enemy";
 
+        var enemy2 = new EnemyController(_enemyAdvancedSheet, player);
+        enemy2.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
+        enemy2.Position.Y = (_graphics.PreferredBackBufferHeight / 2) + 0;
+        enemy2.MoveSpeed = 30f;
+        enemy2.Name = "Enemy2";
+
+        var enemy3 = new EnemyController(_enemyAdvancedSheet, player);
+        enemy3.Position.X = (_graphics.PreferredBackBufferWidth / 2) - 150;
+        enemy3.Position.Y = (_graphics.PreferredBackBufferHeight / 2) + 100;
+        enemy3.MoveSpeed = 30f;
+        enemy3.Name = "Enemy3";
     }
 
     protected override void Update(GameTime gameTime)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace forged_fury;
 
@@ -16,15 +17,22 @@ public class Collider : IDisposable
     public int Height { get; set; }
 
     public Action<Collider> OnCollisionAction;
-
     public GameObject Parent { get; set; }
 
     public Sprite DebugSprite;
 
+    public string? Name { get; set; }
+
     public bool Enabled { get; set; }
+
+    public bool TopCollision { get; set; }
+    public bool BottomCollision { get; set; }
+    public bool LeftCollision { get; set; }
+    public bool RightCollision { get; set; }
 
     public Collider(GameObject parent)
     {
+        Name = "collider";
         Enabled = false;
         Parent = parent;
         ColliderManager.Add(this);

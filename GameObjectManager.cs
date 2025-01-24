@@ -14,12 +14,12 @@ public static class GameObjectManager
 
     public static void Update(GameTime gameTime)
     {
-        _gameObjects.ForEach(g => g.Update(gameTime));
+        _gameObjects.ToList().ForEach(g => g.Update(gameTime));
     }
 
     public static void Draw(SpriteBatch spriteBatch)
     {
-        _gameObjects.ForEach(g => g.Draw(spriteBatch));
+        _gameObjects.ToList().ForEach(g => g.Draw(spriteBatch));
     }
 
     public static void Add(GameObject gameObject)
