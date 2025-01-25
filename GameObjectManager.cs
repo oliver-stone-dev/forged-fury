@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -30,5 +31,10 @@ public static class GameObjectManager
     public static void Remove(GameObject gameObject)
     {
         _gameObjects.Remove(gameObject);
+    }
+
+    public static void Clear()
+    {
+        _gameObjects.Clear();
     }
 }

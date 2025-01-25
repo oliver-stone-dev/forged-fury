@@ -148,20 +148,23 @@ public static class ColliderManager
         var rect1 = new Rectangle((int)collider1.Position.X,(int)collider1.Position.Y, collider1.Width, collider1.Height);
         var rect2 = new Rectangle((int)collider2.Position.X, (int)collider2.Position.Y, collider2.Width, collider2.Height);
 
-        float overlapLeft = rect2.Right - rect1.Left;
-        float overlapRight = rect1.Right - rect2.Left;
-        float overlapTop = rect2.Bottom - rect1.Top;
-        float overlapBottom = rect1.Bottom - rect2.Top;
-
-        float minOverlap = Math.Min(Math.Min(overlapLeft, overlapRight), Math.Min(overlapTop, overlapBottom));
-
-        if (minOverlap == overlapLeft)
-            collider1.LeftCollision = true;
-        else if (minOverlap == overlapRight)
+        if (rect1.Right > rect2.Left && rect1.Left < rect2.Left)
+        {
             collider1.RightCollision = true;
-        else if (minOverlap == overlapTop)
-            collider1.TopCollision = true;
-        else if (minOverlap == overlapBottom)
+        }
+
+        if (rect1.Left < rect2.Right && rect1.Right > rect2.Right)
+        {
+            collider1.LeftCollision = true;
+        }
+
+        if (rect1.Bottom > rect2.Top && rect1.Top < rect2.Top)
+        {
             collider1.BottomCollision = true;
+        }
+        if (rect1.Top < rect2.Bottom && rect1.Bottom > rect2.Bottom)
+        {
+            collider1.TopCollision = true;
+        }
     }
 }

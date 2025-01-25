@@ -5,16 +5,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace forged_fury;
 
 public class Environment : GameObject
 {
+    private readonly SpriteFont _font;
     private readonly Sprite _background;
     private readonly Sprite _level;
 
-    public Environment(Texture2D backgroundSprite, Texture2D levelSprite, GraphicsDeviceManager graphics) :base()
+    private Collider _topWallCollider;
+    private Collider _bottomWallCollider;
+    private Collider _leftWallCollider;
+    private Collider _rightWallCollider;
+
+    public Environment(Texture2D backgroundSprite, Texture2D levelSprite, GraphicsDeviceManager graphics, SpriteFont font) :base()
     {
+        _font = font;
+
         //Background sprite
         _background = new Sprite(backgroundSprite);
         _background.Position.X = graphics.PreferredBackBufferWidth / 2;
@@ -28,6 +37,37 @@ public class Environment : GameObject
         _level.Position.X = graphics.PreferredBackBufferWidth / 2;
         _level.Position.Y = graphics.PreferredBackBufferHeight / 2;
         _level.Scale = 2f;
+
+        //Load wall colliders
+        _topWallCollider = new Collider(this);
+        _bottomWallCollider = new Collider(this);
+        _leftWallCollider = new Collider(this);
+        _rightWallCollider = new Collider(this);
+
+        _topWallCollider.Width = 448 * 2;
+        _topWallCollider.Height = 32;
+        _topWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2;
+        _topWallCollider.Position.Y = (graphics.PreferredBackBufferHeight / 2) - 270;
+
+        _bottomWallCollider.Width = 448 * 2;
+        _bottomWallCollider.Height = 32;
+        _bottomWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2;
+        _bottomWallCollider.Position.Y = (graphics.PreferredBackBufferHeight / 2) + 240;
+
+        _leftWallCollider.Width = 32;
+        _leftWallCollider.Height = 288 * 2;
+        _leftWallCollider.Position.X = (graphics.PreferredBackBufferWidth / 2) - 435;
+        _leftWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2;
+
+        _rightWallCollider.Width = 32;
+        _rightWallCollider.Height = 288 * 2;
+        _rightWallCollider.Position.X = (graphics.PreferredBackBufferWidth / 2) + 435;
+        _rightWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2;
+
+        _topWallCollider.Enabled = true;
+        _bottomWallCollider.Enabled = true;
+        _leftWallCollider.Enabled = true;
+        _rightWallCollider.Enabled = true;
     }
 
     public override void Update(GameTime gameTime)

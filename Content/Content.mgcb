@@ -25,6 +25,13 @@
 /processorParam:TextureFormat=Color
 /build:EnemyAdvancedSheet.png
 
+#begin FontMain.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:FontMain.spritefont
+
 #begin Level.png
 /importer:TextureImporter
 /processor:TextureProcessor

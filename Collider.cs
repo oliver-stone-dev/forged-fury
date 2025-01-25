@@ -12,7 +12,7 @@ namespace forged_fury;
 
 public class Collider : IDisposable
 {
-    public Vector2 Position { get; set; }
+    public Vector2 Position;
     public int Width { get; set; }
     public int Height { get; set; }
 
@@ -32,6 +32,7 @@ public class Collider : IDisposable
 
     public Collider(GameObject parent)
     {
+        Position = Vector2.Zero;
         Name = "collider";
         Enabled = false;
         Parent = parent;
