@@ -36,7 +36,7 @@ public class EnemyController : Character, IDamagable
 
     public float MinAttackDistance { get; set; }
 
-    public EnemyController(Texture2D texture2D, Character playerToFollow) : base(texture2D)
+    public EnemyController(Texture2D texture2D, Texture2D shadow, Character playerToFollow) : base(texture2D, shadow)
     {
         _attackCollider = new(this);
         _attackCollider.Enabled = false;

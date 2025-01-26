@@ -44,7 +44,7 @@ public class PlayerController : Character, IDamagable, IScoreTracker
 
     private Vector2 _movement = Vector2.Zero;
 
-    public PlayerController(Texture2D texture2D) : base(texture2D)
+    public PlayerController(Texture2D texture2D,Texture2D shadow) : base(texture2D, shadow)
     {
         _attackCollider = new(this);
         _attackCollider.Enabled = false;

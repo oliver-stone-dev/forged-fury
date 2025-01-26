@@ -18,6 +18,7 @@ public class Game1 : Game
     private Texture2D _playerSpriteSheet;
     private Texture2D _enemyAdvancedSheet;
     private Texture2D _debugTexture;
+    private Texture2D _shadowTexture;
     private const int _levelWidth = 448;
     private const int _levelHeight = 288;
     private const float _spriteScale = 2f;
@@ -67,6 +68,7 @@ public class Game1 : Game
         _windowBackground.SetData(new Color[] { Color.White });
         _playerSpriteSheet = Content.Load<Texture2D>("PlayerSheet");
         _enemyAdvancedSheet = Content.Load<Texture2D>("EnemyAdvancedSheet");
+        _shadowTexture = Content.Load<Texture2D>("Shadow");
 
         _debugTexture = new Texture2D(GraphicsDevice, 1, 1);
         _debugTexture.SetData(new Color[] { Color.White });
@@ -161,14 +163,14 @@ public class Game1 : Game
     {
         var environment = new Environment(_windowBackground, _levelBackgroundSprite, _graphics, font);
 
-        _player = new PlayerController(_playerSpriteSheet);
+        _player = new PlayerController(_playerSpriteSheet, _shadowTexture);
         _player.Position.X = _graphics.PreferredBackBufferWidth / 2;
         _player.Position.Y = _graphics.PreferredBackBufferHeight / 2;
         _player.Name = "Player";
         _player.Health = 100;
 
         _gameManager = new GameManager(_player);
-        _enemySpwaner = new EnemySpawner(_enemyAdvancedSheet, _player);
+        _enemySpwaner = new EnemySpawner(_enemyAdvancedSheet,_shadowTexture, _player);
         _roundManager = new RoundManager(_player, font, _enemySpwaner);
     }
 }

@@ -32,6 +32,7 @@ public class Character : GameObject
 
     private AnimationController _animationController;
     private readonly AnimatedSprite _animatedSprite;
+    private readonly Sprite _shadow;
     protected Collider _characterCollider;
 
     protected bool _attackFlag = false;
@@ -42,6 +43,8 @@ public class Character : GameObject
     public Vector2 Velocity;
     private Texture2D texture2D;
 
+    private int _shadowYOffset = 18;
+
     public double Health { get; set; }
     public float Scale { get; set; }
     public float MoveSpeed { get; set; }
@@ -50,7 +53,7 @@ public class Character : GameObject
 
     public bool HasAltAttack { get; set; }
 
-    public Character(Texture2D texture2D) : base()
+    public Character(Texture2D texture2D, Texture2D shadow) : base()
     {
         Health = _startingHealth;
 
@@ -67,6 +70,15 @@ public class Character : GameObject
         _animatedSprite.Height = 64;
         _animatedSprite.Scale = Scale;
 
+        _shadow = new Sprite(shadow);
+        _animatedSprite.Position = this.Position;
+        _animatedSprite.FrameHeight = 64;
+        _animatedSprite.FrameWidth = 64;
+        _animatedSprite.Width = 64;
+        _animatedSprite.Height = 64;
+        _animatedSprite.Scale = Scale;
+
+
         _animationController = new(_animatedSprite);
 
         _characterCollider = new Collider(this);
@@ -74,6 +86,7 @@ public class Character : GameObject
         _characterCollider.Height = 90;
         _characterCollider.Width = 50;
         _characterCollider.Name = "solid";
+
 
         Friction = 0.8f;
     }
@@ -85,6 +98,7 @@ public class Character : GameObject
         SetAnimatorState();
         ClampVelocity();
         ApplyFriction();
+        SetShadowPosition();
         Move(gameTime);
         OnDeath(gameTime);
         _animationController.Update(gameTime);
@@ -95,6 +109,7 @@ public class Character : GameObject
 
     public override void Draw(SpriteBatch spriteBatch)
     {
+        _shadow.Draw(spriteBatch);
         _animatedSprite.Draw(spriteBatch);
     }
 
@@ -219,6 +234,13 @@ public class Character : GameObject
         {
             _animationController.SetNextState(AnimationController.AnimationStates.RunLeft);
         }
+    }
+
+    private void SetShadowPosition()
+    {
+        var pos = Position;
+        pos.Y += _shadowYOffset;
+        _shadow.Position = pos;
     }
 
     protected void ResetAnimation()

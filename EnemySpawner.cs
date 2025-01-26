@@ -12,6 +12,7 @@ namespace forged_fury;
 public class EnemySpawner
 {
     private readonly Texture2D _spriteSheet;
+    private readonly Texture2D _shadowTexture;
     private readonly PlayerController _player;
     private readonly GraphicsDeviceManager _graphics;
 
@@ -21,10 +22,11 @@ public class EnemySpawner
     private int _spawnAreaWidth = 150;
     private int _spawnAreaHeight = 300;
 
-    public EnemySpawner (Texture2D spriteSheet, PlayerController player)
+    public EnemySpawner (Texture2D spriteSheet,Texture2D shadow, PlayerController player)
     {
         _spriteSheet = spriteSheet;
         _player = player;
+        _shadowTexture = shadow;
 
         _spawnAreaLeft = new Rectangle(400 - (_spawnAreaWidth / 2), 333 - (_spawnAreaHeight / 2), _spawnAreaWidth, _spawnAreaHeight);
         _spawnAreaRight = new Rectangle(885 - (_spawnAreaWidth / 2), 333 - (_spawnAreaHeight / 2), _spawnAreaWidth, _spawnAreaHeight);
@@ -34,7 +36,7 @@ public class EnemySpawner
     {
         var spawnPoint = GetRandomSpawnPoint();
 
-        var enemy = new EnemyController(_spriteSheet, _player);
+        var enemy = new EnemyController(_spriteSheet, _shadowTexture, _player);
         enemy.Position.X = spawnPoint.X;
         enemy.Position.Y = spawnPoint.Y;
         enemy.MoveSpeed = 30f;
