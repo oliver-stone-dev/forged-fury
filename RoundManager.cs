@@ -80,8 +80,10 @@ public class RoundManager : GameObject
         spriteBatch.DrawString(_font, $"{CurrentRound}", new Vector2(310, 15), Color.White);
         spriteBatch.DrawString(_font, "Time Remaining: ", new Vector2(370, 15), Color.White);
         spriteBatch.DrawString(_font, $"{TimeRemainingMs / 1000}", new Vector2(630, 15), Color.White);
-        spriteBatch.DrawString(_font, "Player Health: ", new Vector2(800, 15), Color.White);
-        spriteBatch.DrawString(_font, $"{_player.Health}", new Vector2(1000, 15), Color.White);
+        spriteBatch.DrawString(_font, "Player Health: ", new Vector2(600, 15), Color.White);
+        spriteBatch.DrawString(_font, $"{_player.Health}", new Vector2(800, 15), Color.White);
+        spriteBatch.DrawString(_font, "Player Score: ", new Vector2(900, 15), Color.White);
+        spriteBatch.DrawString(_font, $"{_player.Score}", new Vector2(1100, 15), Color.White);
         base.Draw(spriteBatch);
     }
 
@@ -120,10 +122,7 @@ public class RoundManager : GameObject
     {
         for (int i = 0; i < count; i++)
         {
-            int x = Convert.ToInt32(_player.Position.X - 100);
-            int y = Convert.ToInt32(_player.Position.Y + (i * 20 ));
-
-            _spawner.SpawnEnemy(x, y);
+            _spawner.SpawnEnemy();
         }
     }
 }

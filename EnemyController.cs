@@ -28,6 +28,10 @@ public class EnemyController : Character, IDamagable
     private int _attackWidth = 20;
     private int _attackPosition = 40;
 
+    private int _scoreReward = 1;
+
+    private float _hitBackAmount = 2000f;
+
     public Vector2 TargetPosition { get; set; }
 
     public float MinAttackDistance { get; set; }
@@ -79,7 +83,7 @@ public class EnemyController : Character, IDamagable
 
         if (distance <= MinAttackDistance)
         {
-            Velocity = Vector2.Zero;
+            //Velocity = Vector2.Zero;
             Attack();
         }
         else
@@ -131,6 +135,11 @@ public class EnemyController : Character, IDamagable
     {
         if (Health <= 0)
         {
+            var scoreTracker = (IScoreTracker)_playerToFollow;
+            if (scoreTracker != null)
+            {
+                scoreTracker.AddScore(_scoreReward);
+            }
             Destroy();
         }
     }
@@ -156,5 +165,14 @@ public class EnemyController : Character, IDamagable
     public void ApplyDamage(double amount)
     {
         Health -= amount;
+        HitBack();
+    }
+
+    public void HitBack()
+    {
+        var dif = Vector2.Subtract(Position, TargetPosition);
+        var dir = Vector2.Normalize(dif);
+        var v = dir * _hitBackAmount;
+        Velocity = -Vector2.Subtract(Velocity, v);
     }
 }

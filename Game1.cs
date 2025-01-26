@@ -28,6 +28,7 @@ public class Game1 : Game
     private GameManager _gameManager;
     private RoundManager _roundManager;
     private EnemySpawner _enemySpwaner;
+    private PlayerController _player;
 
     private GameStates _gameState = GameStates.Menu;
 
@@ -108,7 +109,7 @@ public class Game1 : Game
                 GameObjectManager.Clear();
                 _scoreScreen = new ScoreScreen(_windowBackground, _graphics, font);
                 _scoreScreen.Rounds = _roundManager.CurrentRound;
-                _scoreScreen.Score = 1;
+                _scoreScreen.Score = _player.Score;
                 _gameState = GameStates.Score;
                 break;
             case (GameStates.Score):
@@ -160,14 +161,14 @@ public class Game1 : Game
     {
         var environment = new Environment(_windowBackground, _levelBackgroundSprite, _graphics, font);
 
-        var player = new PlayerController(_playerSpriteSheet);
-        player.Position.X = _graphics.PreferredBackBufferWidth / 2;
-        player.Position.Y = _graphics.PreferredBackBufferHeight / 2;
-        player.Name = "Player";
-        player.Health = 100;
+        _player = new PlayerController(_playerSpriteSheet);
+        _player.Position.X = _graphics.PreferredBackBufferWidth / 2;
+        _player.Position.Y = _graphics.PreferredBackBufferHeight / 2;
+        _player.Name = "Player";
+        _player.Health = 100;
 
-        _gameManager = new GameManager(player);
-        _enemySpwaner = new EnemySpawner(_enemyAdvancedSheet, player);
-        _roundManager = new RoundManager(player, font, _enemySpwaner);
+        _gameManager = new GameManager(_player);
+        _enemySpwaner = new EnemySpawner(_enemyAdvancedSheet, _player);
+        _roundManager = new RoundManager(_player, font, _enemySpwaner);
     }
 }

@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 
 namespace forged_fury;
 
-public class PlayerController : Character, IDamagable
+public class PlayerController : Character, IDamagable, IScoreTracker
 {
+    public int Score { get; set; }
+
     private bool _attackButtonPressed = false;
     private bool _attacking = false;
 
@@ -29,11 +31,16 @@ public class PlayerController : Character, IDamagable
     private int _attackWidth = 30;
     private int _attackPosition = 55;
 
+    private bool _hasDashed = false;
+    private bool _dashButtonPressed = false;
+    private int _dashCoolDownMs = 2000;
+    private int _dashCooldownTimer = 0;
+    private float _dashAmount = 4f;
+
     private bool _collisionTop = false;
     private bool _collisionBottom = false;
     private bool _collisionLeft = false;
     private bool _collisionRight = false;
-
 
     public PlayerController(Texture2D texture2D) : base(texture2D)
     {
@@ -52,6 +59,7 @@ public class PlayerController : Character, IDamagable
         SetColliderAttackPosition();
         SetVelocity(gameTime);
         ResetAttack(gameTime);
+        ResetDash(gameTime);
         base.Update(gameTime);
     }
 
@@ -103,6 +111,21 @@ public class PlayerController : Character, IDamagable
                 _attackButtonPressed = false;
             }
         }
+        if (state.IsKeyDown(Keys.LeftShift))
+        {
+            if (_hasDashed == false)
+            {
+                _dashButtonPressed = true;
+            }
+        }
+        if (state.IsKeyUp(Keys.LeftShift))
+        {
+            if (_dashButtonPressed && _hasDashed == false)
+            {
+                Dash();
+                _dashButtonPressed = false;
+            }
+        }
     }
 
     private void Attack()
@@ -115,6 +138,26 @@ public class PlayerController : Character, IDamagable
         _attackDelayTimer = _attackColliderDelayMs;
     }
 
+    private void Dash()
+    {
+        Velocity *= _dashAmount;
+        _hasDashed = true;
+        _dashCooldownTimer = _dashCoolDownMs;
+    }
+
+    private void ResetDash(GameTime gameTime)
+    {
+        if (_hasDashed == false) return;
+        
+        _dashCooldownTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+        if (_dashCooldownTimer <= 0)
+        {
+            _dashCooldownTimer = _dashCoolDownMs;
+            _hasDashed = false;
+        }
+    }
+
     private void ResetAttack(GameTime gameTime)
     {
         if (_hasAttackedFlag == false) return;
@@ -124,8 +167,11 @@ public class PlayerController : Character, IDamagable
 
         if (_attackDelayTimer <= 0)
         {
-            _attackColliderFlag = true;
-            _attackCollider.Enabled = true;
+            if (_attackCollider.Enabled == false)
+            {
+                _attackColliderFlag = true;
+                _attackCollider.Enabled = true;
+            }
         }
 
         if (_attackCooldownTimer <= 0)
@@ -158,7 +204,11 @@ public class PlayerController : Character, IDamagable
 
     public void ApplyDamage(double amount)
     {
-        Debug.WriteLine(Health);
         Health -= amount;
+    }
+
+    public void AddScore(int amount)
+    {
+        Score += amount;
     }
 }
