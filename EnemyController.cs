@@ -123,24 +123,33 @@ public class EnemyController : Character, IDamagable
 
         if (_attackCooldownTimer <= 0)
         {
-            _hasAttackedFlag = false;
-            _attackFlag = false;
-            _attackCooldownTimer = 0;
-            _attackColliderFlag = false;
-            _attackCollider.Enabled = false;
+            StopAttack();
         }
+    }
+
+    private void StopAttack()
+    {
+        _hasAttackedFlag = false;
+        _attackFlag = false;
+        _attackCooldownTimer = 0;
+        _attackColliderFlag = false;
+        _attackCollider.Enabled = false;
+        
     }
 
     private void CheckHealth()
     {
         if (Health <= 0)
         {
-            var scoreTracker = (IScoreTracker)_playerToFollow;
-            if (scoreTracker != null)
+            if (_isDying == false)
             {
-                scoreTracker.AddScore(_scoreReward);
+                var scoreTracker = (IScoreTracker)_playerToFollow;
+                if (scoreTracker != null)
+                {
+                    scoreTracker.AddScore(_scoreReward);
+                }
+                DeathFlag = true;
             }
-            Destroy();
         }
     }
 
@@ -165,6 +174,7 @@ public class EnemyController : Character, IDamagable
     public void ApplyDamage(double amount)
     {
         Health -= amount;
+        StopAttack();
         HitBack();
     }
 

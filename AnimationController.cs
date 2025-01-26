@@ -21,7 +21,9 @@ public class AnimationController
         RunRight,
         RunLeft,
         AttackRight,
-        AttackLeft
+        AttackLeft,
+        DeathRight,
+        DeathLeft
     }
 
     private readonly AnimatedSprite _animatedSprite;
@@ -96,6 +98,22 @@ public class AnimationController
                 _waitToFinish = true;
                 _animatedSprite.StartFrame = 1;
                 break;
+            case (AnimationStates.DeathRight):
+                _animatedSprite.AnimationRow = 6;
+                _animatedSprite.MaxFrame = 5;
+                _animatedSprite.Period = 200;
+                _animatedSprite.Loop = false;
+                _waitToFinish = true;
+                _animatedSprite.StartFrame = 1;
+                break;
+            case (AnimationStates.DeathLeft):
+                _animatedSprite.AnimationRow = 7;
+                _animatedSprite.MaxFrame = 5;
+                _animatedSprite.Period = 200;
+                _animatedSprite.Loop = false;
+                _waitToFinish = true;
+                _animatedSprite.StartFrame = 1;
+                break;
             default:
                 break;
         }
@@ -159,8 +177,31 @@ public class AnimationController
                     _animatedSprite.Start();
                 }
                 break;
+            case (AnimationStates.DeathRight):
+                if (_nextState != _currentState && _animatedSprite.IsRunning() == false)
+                {
+                    _animatedSprite.Stop();
+                    _currentState = _nextState;
+                    SetAnimatedSpriteAnimation(_currentState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.DeathLeft):
+                if (_nextState != _currentState && _animatedSprite.IsRunning() == false)
+                {
+                    _animatedSprite.Stop();
+                    _currentState = _nextState;
+                    SetAnimatedSpriteAnimation(_currentState);
+                    _animatedSprite.Start();
+                }
+                break;
             default:
                 break;
         }
+    }
+
+    public void Reset()
+    {
+        _animatedSprite.Stop();
     }
 }

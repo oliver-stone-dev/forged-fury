@@ -26,6 +26,10 @@ public class Character : GameObject
     private readonly float _maxSpeed = 100f;
     private readonly float _stoppedVelocity = 10f;
 
+    protected bool _isDying = false;
+    private int _deathDelayMs = 800;
+    private int _deathDelayTimer = 0;
+
     private AnimationController _animationController;
     private readonly AnimatedSprite _animatedSprite;
     protected Collider _characterCollider;
@@ -42,6 +46,7 @@ public class Character : GameObject
     public float Scale { get; set; }
     public float MoveSpeed { get; set; }
     public float Friction { get; set; }
+    public bool DeathFlag { get; set; }
 
     public Character(Texture2D texture2D) : base()
     {
@@ -69,8 +74,6 @@ public class Character : GameObject
         _characterCollider.Name = "solid";
 
         Friction = 0.8f;
-
-        _characterCollider.OnCollisionAction = OnCharacterCollision;
     }
 
     public override void Update(GameTime gameTime)
@@ -81,6 +84,7 @@ public class Character : GameObject
         ClampVelocity();
         ApplyFriction();
         Move(gameTime);
+        OnDeath(gameTime);
         _animationController.Update(gameTime);
         _animatedSprite.Update(gameTime);
         _characterCollider.Position = Position;
@@ -99,6 +103,8 @@ public class Character : GameObject
 
     private void Move(GameTime gameTime)
     {
+        if (_isDying) return;
+
         if (_characterCollider.TopCollision && Velocity.Y < 0) Velocity.Y = 0;
         if (_characterCollider.BottomCollision && Velocity.Y > 0) Velocity.Y = 0;
         if (_characterCollider.LeftCollision && Velocity.X < 0) Velocity.X = 0;
@@ -141,7 +147,23 @@ public class Character : GameObject
     //TO DO - Refactor how animator class works
     private void SetAnimatorState()
     {
-        if (_attackFlag)
+        if (_isDying == true) return;
+
+        if (DeathFlag)
+        {
+            DeathFlag = false;
+            _deathDelayTimer = _deathDelayMs;
+            _isDying = true;
+            if (_characterDirection == Direction.Right)
+            {
+                _animationController.SetNextState(AnimationController.AnimationStates.DeathRight);
+            }
+            else
+            {
+                _animationController.SetNextState(AnimationController.AnimationStates.DeathLeft);
+            }
+        }
+        else if (_attackFlag)
         {
             _attackFlag = false;
             if (_characterDirection == Direction.Right)
@@ -182,9 +204,23 @@ public class Character : GameObject
         }
     }
 
-
-    private void OnCharacterCollision(Collider collider)
+    protected void ResetAnimation()
     {
+        _animationController.Reset();
     }
 
+    private void OnDeath(GameTime gameTime)
+    {
+        if (_isDying)
+        {
+            _characterCollider.Enabled = false;
+
+            _deathDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+            if (_deathDelayTimer <= 0)
+            {
+                Destroy();
+            }
+        }
+    }
 }

@@ -42,6 +42,8 @@ public class PlayerController : Character, IDamagable, IScoreTracker
     private bool _collisionLeft = false;
     private bool _collisionRight = false;
 
+    private Vector2 _movement = Vector2.Zero;
+
     public PlayerController(Texture2D texture2D) : base(texture2D)
     {
         _attackCollider = new(this);
@@ -57,6 +59,7 @@ public class PlayerController : Character, IDamagable, IScoreTracker
     public override void Update(GameTime gameTime)
     {
         SetColliderAttackPosition();
+        GetInputs();
         SetVelocity(gameTime);
         ResetAttack(gameTime);
         ResetDash(gameTime);
@@ -79,25 +82,26 @@ public class PlayerController : Character, IDamagable, IScoreTracker
         }
     }
 
-    private void SetVelocity(GameTime gameTime)
+    private void GetInputs()
     {
         var state = Keyboard.GetState();
 
+        _movement = Vector2.Zero;
         if (state.IsKeyDown(Keys.W))
         {
-            Velocity.Y -= MoveSpeed;
+            _movement.Y = -1;
         }
         if (state.IsKeyDown(Keys.S))
         {
-            Velocity.Y += MoveSpeed;
+            _movement.Y = 1;
         }
         if (state.IsKeyDown(Keys.A))
         {
-            Velocity.X -= MoveSpeed;
+            _movement.X = -1;
         }
         if (state.IsKeyDown(Keys.D))
         {
-            Velocity.X += MoveSpeed;
+            _movement.X = 1;
         }
         if (state.IsKeyDown(Keys.Space))
         {
@@ -126,6 +130,16 @@ public class PlayerController : Character, IDamagable, IScoreTracker
                 _dashButtonPressed = false;
             }
         }
+    }
+
+    private void SetVelocity(GameTime gameTime)
+    {
+        if (_movement == Vector2.Zero) return;
+
+        var dir = -_movement;
+        var v = dir * MoveSpeed;
+        var norm = Vector2.Normalize(v);
+        Velocity = Vector2.Subtract(Velocity, v);
     }
 
     private void Attack()
