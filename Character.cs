@@ -48,6 +48,8 @@ public class Character : GameObject
     public float Friction { get; set; }
     public bool DeathFlag { get; set; }
 
+    public bool HasAltAttack { get; set; }
+
     public Character(Texture2D texture2D) : base()
     {
         Health = _startingHealth;
@@ -165,14 +167,29 @@ public class Character : GameObject
         }
         else if (_attackFlag)
         {
+            var rand = new Random();
             _attackFlag = false;
             if (_characterDirection == Direction.Right)
             {
-                 _animationController.SetNextState(AnimationController.AnimationStates.AttackRight);
+                if ( (rand.Next(0, 2) == 0) && HasAltAttack)
+                {
+                    _animationController.SetNextState(AnimationController.AnimationStates.AttackRightAlt);
+                }
+                else
+                {
+                    _animationController.SetNextState(AnimationController.AnimationStates.AttackRight);
+                }
             }
             else
             {
-                _animationController.SetNextState(AnimationController.AnimationStates.AttackLeft);
+                if ((rand.Next(0, 2) == 0) && HasAltAttack)
+                {
+                    _animationController.SetNextState(AnimationController.AnimationStates.AttackLeftAlt);
+                }
+                else
+                {
+                    _animationController.SetNextState(AnimationController.AnimationStates.AttackLeft);
+                }
             }
         }
         else if (Math.Abs(Velocity.X) <= _stoppedVelocity && Math.Abs(Velocity.Y) <= _stoppedVelocity)

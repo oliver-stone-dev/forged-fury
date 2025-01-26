@@ -12,17 +12,32 @@ public class GameManager : GameObject
 {
     private readonly PlayerController _player;
 
+    private bool _playerDeathFlag = false;
+    private int _gameEndDelayMs = 2000;
+    private int _gameEndDelayTimer = 0;
+
     public bool GameEndFlag { get; set; }
 
     public GameManager(PlayerController player)
     {
         _player = player;
+        _gameEndDelayTimer = _gameEndDelayMs;
     }
     public override void Update(GameTime gameTime)
     {
         if (_player.Health <= 0)
         {
-            GameEndFlag = true;
+            _playerDeathFlag = true;
+        }
+
+        if (_playerDeathFlag)
+        {
+            _gameEndDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
+            
+            if (_gameEndDelayTimer <= 0)
+            {
+                GameEndFlag = true;
+            }
         }
 
         base.Update(gameTime);

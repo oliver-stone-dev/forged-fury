@@ -13,7 +13,7 @@ public class EnemyController : Character, IDamagable
 {
     private readonly Character _playerToFollow;
 
-    private int _attackColliderDelayMs = 250;
+    private int _attackColliderDelayMs = 350;
     private int _attackDelayTimer = 0;
     private bool _attackColliderFlag = false;
 

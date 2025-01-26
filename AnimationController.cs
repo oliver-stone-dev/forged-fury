@@ -22,6 +22,8 @@ public class AnimationController
         RunLeft,
         AttackRight,
         AttackLeft,
+        AttackRightAlt,
+        AttackLeftAlt,
         DeathRight,
         DeathLeft
     }
@@ -98,8 +100,24 @@ public class AnimationController
                 _waitToFinish = true;
                 _animatedSprite.StartFrame = 1;
                 break;
-            case (AnimationStates.DeathRight):
+            case (AnimationStates.AttackRightAlt):
                 _animatedSprite.AnimationRow = 6;
+                _animatedSprite.MaxFrame = 4;
+                _animatedSprite.Period = 75;
+                _animatedSprite.Loop = false;
+                _waitToFinish = true;
+                _animatedSprite.StartFrame = 1;
+                break;
+            case (AnimationStates.AttackLeftAlt):
+                _animatedSprite.AnimationRow = 7;
+                _animatedSprite.MaxFrame = 4;
+                _animatedSprite.Period = 75;
+                _animatedSprite.Loop = false;
+                _waitToFinish = true;
+                _animatedSprite.StartFrame = 1;
+                break;
+            case (AnimationStates.DeathRight):
+                _animatedSprite.AnimationRow = 8;
                 _animatedSprite.MaxFrame = 5;
                 _animatedSprite.Period = 200;
                 _animatedSprite.Loop = false;
@@ -107,7 +125,7 @@ public class AnimationController
                 _animatedSprite.StartFrame = 1;
                 break;
             case (AnimationStates.DeathLeft):
-                _animatedSprite.AnimationRow = 7;
+                _animatedSprite.AnimationRow = 9;
                 _animatedSprite.MaxFrame = 5;
                 _animatedSprite.Period = 200;
                 _animatedSprite.Loop = false;
@@ -169,6 +187,24 @@ public class AnimationController
                 }
                 break;
             case (AnimationStates.AttackLeft):
+                if (_nextState != _currentState && _animatedSprite.IsRunning() == false)
+                {
+                    _animatedSprite.Stop();
+                    _currentState = _nextState;
+                    SetAnimatedSpriteAnimation(_currentState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.AttackRightAlt):
+                if (_nextState != _currentState && _animatedSprite.IsRunning() == false)
+                {
+                    _animatedSprite.Stop();
+                    _currentState = _nextState;
+                    SetAnimatedSpriteAnimation(_currentState);
+                    _animatedSprite.Start();
+                }
+                break;
+            case (AnimationStates.AttackLeftAlt):
                 if (_nextState != _currentState && _animatedSprite.IsRunning() == false)
                 {
                     _animatedSprite.Stop();

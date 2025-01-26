@@ -54,6 +54,8 @@ public class PlayerController : Character, IDamagable, IScoreTracker
         _attackCollider.OnCollisionAction = OnAttackCollision;
 
         _attacking = false;
+
+        HasAltAttack = true;
     }
 
     public override void Update(GameTime gameTime)
@@ -61,6 +63,7 @@ public class PlayerController : Character, IDamagable, IScoreTracker
         SetColliderAttackPosition();
         GetInputs();
         SetVelocity(gameTime);
+        CheckHealth();
         ResetAttack(gameTime);
         ResetDash(gameTime);
         base.Update(gameTime);
@@ -212,6 +215,17 @@ public class PlayerController : Character, IDamagable, IScoreTracker
                     damageable.ApplyDamage(10);
                 }
                 _attackColliderFlag = false;
+            }
+        }
+    }
+
+    private void CheckHealth()
+    {
+        if (Health <= 0)
+        {
+            if (_isDying == false)
+            {
+                DeathFlag = true;
             }
         }
     }
