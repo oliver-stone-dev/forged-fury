@@ -32,16 +32,16 @@ public class EnemySpawner
         _spawnAreaRight = new Rectangle(885 - (_spawnAreaWidth / 2), 333 - (_spawnAreaHeight / 2), _spawnAreaWidth, _spawnAreaHeight);
     }
 
-    public void SpawnEnemy()
+    public void SpawnEnemy(int health, float moveSpeed)
     {
         var spawnPoint = GetRandomSpawnPoint();
 
         var enemy = new EnemyController(_spriteSheet, _shadowTexture, _player);
         enemy.Position.X = spawnPoint.X;
         enemy.Position.Y = spawnPoint.Y;
-        enemy.MoveSpeed = 30f;
+        enemy.MoveSpeed = moveSpeed;
         enemy.Name = "Enemy";
-        enemy.Health = 20;
+        enemy.Health = health;
     }
 
     private bool PointInsideArea(Vector2 point, Rectangle area)

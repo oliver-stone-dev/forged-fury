@@ -24,13 +24,13 @@ public class EnemyController : Character, IDamagable
     private Collider _attackCollider;
 
     private float _defaultAttackDistance = 60f;
-    private int _attackHeight = 40;
-    private int _attackWidth = 20;
+    private int _attackHeight = 50;
+    private int _attackWidth = 30;
     private int _attackPosition = 40;
 
     private int _scoreReward = 1;
 
-    private float _hitBackAmount = 2000f;
+    private float _hitBackAmount = 1500f;
 
     public Vector2 TargetPosition { get; set; }
 
@@ -75,6 +75,7 @@ public class EnemyController : Character, IDamagable
 
     private void FollowTarget()
     {
+        if (_isDying) return;
         if (_playerToFollow.Health <= 0) return;
 
         TargetPosition = _playerToFollow.Position;
@@ -83,7 +84,6 @@ public class EnemyController : Character, IDamagable
 
         if (distance <= MinAttackDistance)
         {
-            //Velocity = Vector2.Zero;
             Attack();
         }
         else
@@ -131,10 +131,10 @@ public class EnemyController : Character, IDamagable
     {
         _hasAttackedFlag = false;
         _attackFlag = false;
-        _attackCooldownTimer = 0;
+        _attackCooldownTimer = _attackCooldownMs;
+        _attackDelayTimer = _attackColliderDelayMs;
         _attackColliderFlag = false;
         _attackCollider.Enabled = false;
-        
     }
 
     private void CheckHealth()
@@ -164,7 +164,8 @@ public class EnemyController : Character, IDamagable
                 var damageable = (IDamagable)hit;
                 if (damageable != null)
                 {
-                    damageable.ApplyDamage(10);
+                    var rand = new Random();
+                    damageable.ApplyDamage(rand.Next(1, 5));
                 }
                 _attackColliderFlag = false;
             }

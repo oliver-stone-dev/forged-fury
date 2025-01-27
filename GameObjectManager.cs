@@ -37,4 +37,9 @@ public static class GameObjectManager
     {
         _gameObjects.Clear();
     }
+
+    public static int CountObjects(string name)
+    {
+        return _gameObjects.Count(o => o.Name == name);
+    }
 }

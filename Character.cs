@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace forged_fury;
 
@@ -44,6 +45,9 @@ public class Character : GameObject
     private Texture2D texture2D;
 
     private int _shadowYOffset = 18;
+
+    private float _aliveFriction = 0.8f;
+    private float _deadFriction = 0.7f;
 
     public double Health { get; set; }
     public float Scale { get; set; }
@@ -86,9 +90,10 @@ public class Character : GameObject
         _characterCollider.Height = 90;
         _characterCollider.Width = 50;
         _characterCollider.Name = "solid";
+        _characterCollider.Enabled = true;
 
 
-        Friction = 0.8f;
+        Friction = _aliveFriction;
     }
 
     public override void Update(GameTime gameTime)
@@ -104,7 +109,6 @@ public class Character : GameObject
         _animationController.Update(gameTime);
         _animatedSprite.Update(gameTime);
         _characterCollider.Position = Position;
-        _characterCollider.Enabled = true;
     }
 
     public override void Draw(SpriteBatch spriteBatch)
@@ -120,8 +124,6 @@ public class Character : GameObject
 
     private void Move(GameTime gameTime)
     {
-        if (_isDying) return;
-
         if (_characterCollider.TopCollision && Velocity.Y < 0) Velocity.Y = 0;
         if (_characterCollider.BottomCollision && Velocity.Y > 0) Velocity.Y = 0;
         if (_characterCollider.LeftCollision && Velocity.X < 0) Velocity.X = 0;
@@ -168,6 +170,7 @@ public class Character : GameObject
 
         if (DeathFlag)
         {
+            Friction = _deadFriction;
             DeathFlag = false;
             _deathDelayTimer = _deathDelayMs;
             _isDying = true;

@@ -44,23 +44,23 @@ public class Environment : GameObject
         _leftWallCollider = new Collider(this);
         _rightWallCollider = new Collider(this);
 
-        _topWallCollider.Width = 448 * 2;
+        _topWallCollider.Width = 500 * 2;
         _topWallCollider.Height = 32;
         _topWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2;
         _topWallCollider.Position.Y = (graphics.PreferredBackBufferHeight / 2) - 270;
 
-        _bottomWallCollider.Width = 448 * 2;
+        _bottomWallCollider.Width = 500 * 2;
         _bottomWallCollider.Height = 32;
         _bottomWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2;
         _bottomWallCollider.Position.Y = (graphics.PreferredBackBufferHeight / 2) + 240;
 
         _leftWallCollider.Width = 32;
-        _leftWallCollider.Height = 288 * 2;
+        _leftWallCollider.Height = 400 * 2;
         _leftWallCollider.Position.X = (graphics.PreferredBackBufferWidth / 2) - 435;
         _leftWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2;
 
         _rightWallCollider.Width = 32;
-        _rightWallCollider.Height = 288 * 2;
+        _rightWallCollider.Height = 400 * 2;
         _rightWallCollider.Position.X = (graphics.PreferredBackBufferWidth / 2) + 435;
         _rightWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2;
 

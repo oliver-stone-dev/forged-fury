@@ -35,7 +35,7 @@ public class PlayerController : Character, IDamagable, IScoreTracker
     private bool _dashButtonPressed = false;
     private int _dashCoolDownMs = 2000;
     private int _dashCooldownTimer = 0;
-    private float _dashAmount = 4f;
+    private float _dashAmount = 6f;
 
     private bool _collisionTop = false;
     private bool _collisionBottom = false;
@@ -87,6 +87,7 @@ public class PlayerController : Character, IDamagable, IScoreTracker
 
     private void GetInputs()
     {
+        if (_isDying) return;
         var state = Keyboard.GetState();
 
         _movement = Vector2.Zero;
@@ -212,7 +213,9 @@ public class PlayerController : Character, IDamagable, IScoreTracker
                 var damageable = (IDamagable)hit;
                 if (damageable != null)
                 {
-                    damageable.ApplyDamage(10);
+                    var rand = new Random();
+                    damageable.ApplyDamage(0);
+                    //damageable.ApplyDamage(rand.Next(5,15));
                 }
                 _attackColliderFlag = false;
             }

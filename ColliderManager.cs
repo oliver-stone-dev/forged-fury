@@ -13,15 +13,6 @@ namespace forged_fury;
 
 public static class ColliderManager
 {
-    public enum CollisionSides
-    {
-        None,
-        Top,
-        Bottom,
-        Left,
-        Right
-    }
-
     private static List<Collider> _colliders = new();
     public static IEnumerable<Collider> Colliders => _colliders;
     public static Vector3 CollisionArea { get; set; }
@@ -79,14 +70,11 @@ public static class ColliderManager
 
             if (collider.Enabled == false) continue;
 
-            if (CheckForCollision(collider, out Collider hit))
-            {
-                collider.OnCollision(hit);
-            }
+            HandleCollisions(collider);
         }
     }
 
-    private static bool CheckForCollision(Collider collider, out Collider hit)
+    private static void HandleCollisions(Collider collider)
     {
         Vector2 l1 = GetTopLeftPoint(collider);
         Vector2 r1 = GetBottomRightPoint(collider);
@@ -97,20 +85,16 @@ public static class ColliderManager
             if (colliderToCheck.Enabled == false) continue;
             if (collider.Parent == colliderToCheck.Parent) continue;
 
-
             var l2 = GetTopLeftPoint(colliderToCheck);
             var r2 = GetBottomRightPoint(colliderToCheck);
 
-            if (CheckIfPointsOverlap(l1,r1,l2,r2))
+            if (CheckIfPointsOverlap(l1, r1, l2, r2))
             {
                 SetCollisionSides(collider, colliderToCheck);
-                hit = colliderToCheck;
-                return true;
+                collider.OnCollision(colliderToCheck);
             }
+          
         }
-
-        hit = null;
-        return false;
     }
 
     private static Vector2 GetTopLeftPoint(Collider collider)
@@ -141,30 +125,36 @@ public static class ColliderManager
         return true;
     }
 
+
     public static void SetCollisionSides(Collider collider1, Collider collider2)
     {
-        var sides = new List<CollisionSides>();
+        var rect1 = new Rectangle((int)collider1.Position.X - (collider1.Width / 2), (int)collider1.Position.Y - (collider1.Height / 2), collider1.Width, collider1.Height);
+        var rect2 = new Rectangle((int)collider2.Position.X - (collider2.Width / 2), (int)collider2.Position.Y - (collider2.Height / 2), collider2.Width, collider2.Height);
 
-        var rect1 = new Rectangle((int)collider1.Position.X,(int)collider1.Position.Y, collider1.Width, collider1.Height);
-        var rect2 = new Rectangle((int)collider2.Position.X, (int)collider2.Position.Y, collider2.Width, collider2.Height);
+        var xDepth = Math.Min(rect2.Right - rect1.Left, rect1.Right - rect2.Left);
+        var yDepth = Math.Min(rect2.Bottom - rect1.Top, rect1.Bottom - rect2.Top);
 
-        if (rect1.Right > rect2.Left && rect1.Left < rect2.Left)
+        if (xDepth < yDepth)
         {
-            collider1.RightCollision = true;
+            if (rect1.Right > rect2.Left && rect1.Right < rect2.Right)
+            {
+                collider1.RightCollision = true;
+            }
+            if (rect1.Left < rect2.Right && rect1.Left > rect2.Left)
+            {
+                collider1.LeftCollision = true;
+            }
         }
-
-        if (rect1.Left < rect2.Right && rect1.Right > rect2.Right)
+        else if (xDepth > yDepth)
         {
-            collider1.LeftCollision = true;
-        }
-
-        if (rect1.Bottom > rect2.Top && rect1.Top < rect2.Top)
-        {
-            collider1.BottomCollision = true;
-        }
-        if (rect1.Top < rect2.Bottom && rect1.Bottom > rect2.Bottom)
-        {
-            collider1.TopCollision = true;
+            if (rect1.Bottom > rect2.Top && rect1.Bottom < rect2.Bottom)
+            {
+                collider1.BottomCollision = true;
+            }
+            if (rect1.Top < rect2.Bottom && rect1.Top > rect2.Top)
+            {
+                collider1.TopCollision = true;
+            }
         }
     }
 }
