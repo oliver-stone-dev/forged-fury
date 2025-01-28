@@ -19,6 +19,8 @@ public class Sprite
     public double Scale { get; set; }
     public Color Color { get; set; }
 
+    public bool Enabled { get; set; }
+
     public Sprite(Texture2D texture) : base()
     {
         _texture2D = texture;
@@ -27,10 +29,13 @@ public class Sprite
         Height = _texture2D.Height;
         Scale = 1f;
         Color = Color.White;
+        Enabled = true;
     }
 
     public virtual void Draw(SpriteBatch spriteBatch)
     {
+        if (Enabled == false) return;
+
         int scaledWidth = Convert.ToInt32(Width * Scale);
         int scaledHeight = Convert.ToInt32(Height * Scale);
 

@@ -17,6 +17,8 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
     private bool _attackButtonPressed = false;
     private bool _attacking = false;
 
+    private readonly ParticleEmitter _particleEmitter;
+
     private Collider _attackCollider;
 
     private int _attackColliderDelayMs = 50;
@@ -44,8 +46,10 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
 
     private Vector2 _movement = Vector2.Zero;
 
-    public PlayerController(Texture2D texture2D,Texture2D shadow) : base(texture2D, shadow)
+    public PlayerController(Texture2D texture2D,Texture2D shadow, ParticleEmitter particleEmitter) : base(texture2D, shadow)
     {
+        _particleEmitter = particleEmitter;
+
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
         _attackCollider.Height = _attackHeight;
@@ -216,6 +220,7 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
                     var rand = new Random();
                     damageable.ApplyDamage(rand.Next(5,15));
                 }
+                _particleEmitter.Emit(collider.Position);
                 _attackColliderFlag = false;
             }
         }

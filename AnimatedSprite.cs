@@ -47,13 +47,19 @@ public class AnimatedSprite : Sprite
 
         if (_currentFrame >= MaxFrame)
         {
-            _currentFrame = 0;
-            if (Loop == false) _running = false;
+            if (Loop == false)
+            {
+                Enabled = false;
+                _running = false;
+            } 
+            else _currentFrame = 0;
         }
     }
 
     public override void Draw(SpriteBatch spriteBatch)
     {
+        if (Enabled == false) return;
+
         int scaledWidth = Convert.ToInt32(Width * Scale);
         int scaledHeight = Convert.ToInt32(Height * Scale);
 
@@ -75,6 +81,7 @@ public class AnimatedSprite : Sprite
     public void Start()
     {
         _currentFrame = StartFrame;
+        Enabled = true;
         _timestamp = 0;
         _running = true;
     }

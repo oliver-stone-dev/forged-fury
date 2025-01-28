@@ -20,6 +20,7 @@ public class Game1 : Game
     private Texture2D _debugTexture;
     private Texture2D _shadowTexture;
     private Texture2D _healthTexture;
+    private Texture2D _sparks;
     private const int _levelWidth = 448;
     private const int _levelHeight = 288;
     private const float _spriteScale = 2f;
@@ -31,6 +32,7 @@ public class Game1 : Game
     private RoundManager _roundManager;
     private EnemySpawner _enemySpawner;
     private PickupSpawner _pickupSpawner;
+    private ParticleEmitter _particleEmitter;
     private PlayerController _player;
 
     private GameStates _gameState = GameStates.Menu;
@@ -72,6 +74,7 @@ public class Game1 : Game
         _enemyAdvancedSheet = Content.Load<Texture2D>("EnemyAdvancedSheet");
         _shadowTexture = Content.Load<Texture2D>("Shadow");
         _healthTexture = Content.Load<Texture2D>("Health");
+        _sparks = Content.Load<Texture2D>("Sparks");
 
         _debugTexture = new Texture2D(GraphicsDevice, 1, 1);
         _debugTexture.SetData(new Color[] { Color.White });
@@ -89,7 +92,6 @@ public class Game1 : Game
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-
 
         switch (_gameState)
         {
@@ -165,8 +167,9 @@ public class Game1 : Game
     private void InitGame()
     {
         var environment = new Environment(_windowBackground, _levelBackgroundSprite, _graphics, font);
+        _particleEmitter = new ParticleEmitter(_sparks);
 
-        _player = new PlayerController(_playerSpriteSheet, _shadowTexture);
+        _player = new PlayerController(_playerSpriteSheet, _shadowTexture,_particleEmitter);
         _player.Position = new Vector2((_graphics.PreferredBackBufferWidth / 2), _graphics.PreferredBackBufferHeight / 2);
         _player.Name = "Player";
         _player.Health = 100;
