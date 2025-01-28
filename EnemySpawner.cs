@@ -9,91 +9,25 @@ using System.Threading.Tasks;
 
 namespace forged_fury;
 
-public class EnemySpawner
+public class EnemySpawner : SpawnArea
 {
     private readonly Texture2D _spriteSheet;
     private readonly Texture2D _shadowTexture;
-    private readonly PlayerController _player;
-    private readonly GraphicsDeviceManager _graphics;
 
-    private Rectangle _spawnAreaLeft;
-    private Rectangle _spawnAreaRight;
-
-    private int _spawnAreaWidth = 150;
-    private int _spawnAreaHeight = 300;
-
-    public EnemySpawner (Texture2D spriteSheet,Texture2D shadow, PlayerController player)
+    public EnemySpawner (Texture2D spriteSheet,Texture2D shadow)
     {
         _spriteSheet = spriteSheet;
-        _player = player;
         _shadowTexture = shadow;
-
-        _spawnAreaLeft = new Rectangle(400 - (_spawnAreaWidth / 2), 333 - (_spawnAreaHeight / 2), _spawnAreaWidth, _spawnAreaHeight);
-        _spawnAreaRight = new Rectangle(885 - (_spawnAreaWidth / 2), 333 - (_spawnAreaHeight / 2), _spawnAreaWidth, _spawnAreaHeight);
     }
 
-    public void SpawnEnemy(int health, float moveSpeed)
+    public void SpawnEnemy(int health, float moveSpeed, PlayerController player)
     {
-        var spawnPoint = GetRandomSpawnPoint();
+        var spawnPoint = GetRandomSpawnPoint(player.Position);
 
-        var enemy = new EnemyController(_spriteSheet, _shadowTexture, _player);
-        enemy.Position.X = spawnPoint.X;
-        enemy.Position.Y = spawnPoint.Y;
+        var enemy = new EnemyController(_spriteSheet, _shadowTexture, player);
+        enemy.Position = spawnPoint;
         enemy.MoveSpeed = moveSpeed;
         enemy.Name = "Enemy";
         enemy.Health = health;
-    }
-
-    private bool PointInsideArea(Vector2 point, Rectangle area)
-    {
-        if (area.Contains(point))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private Vector2 GetRandomPointWithinArea(Rectangle area)
-    {
-        var rand = new Random();
-        var point = Vector2.Zero;
-
-        point.X = rand.Next(area.Left, area.Right);
-        point.Y = rand.Next(area.Top, area.Bottom);
-
-        return point;
-    }
-
-    private Vector2 GetRandomSpawnPoint()
-    {
-        var spawnPoint = Vector2.Zero;
-        var rand = new Random();
-
-        var playerLeft = PointInsideArea(_player.Position, _spawnAreaLeft);
-        var playerRight = PointInsideArea(_player.Position, _spawnAreaRight);
-
-        if (playerLeft)
-        {
-            spawnPoint = GetRandomPointWithinArea(_spawnAreaRight);
-        }
-        else if (playerRight)
-        {
-            spawnPoint = GetRandomPointWithinArea(_spawnAreaLeft);
-        }
-        else
-        {
-            var randomSide = rand.Next(0, 2);
-            if (randomSide == 0)
-            {
-                spawnPoint = GetRandomPointWithinArea(_spawnAreaRight);
-            }
-            else
-            {
-                spawnPoint = GetRandomPointWithinArea(_spawnAreaLeft);
-            }
-        }
-
-        return spawnPoint;
     }
 }

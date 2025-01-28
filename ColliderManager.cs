@@ -79,7 +79,7 @@ public static class ColliderManager
         Vector2 l1 = GetTopLeftPoint(collider);
         Vector2 r1 = GetBottomRightPoint(collider);
 
-        foreach (var colliderToCheck in _colliders)
+        foreach (var colliderToCheck in _colliders.ToList())
         {
             if (colliderToCheck == collider) continue;
             if (colliderToCheck.Enabled == false) continue;
@@ -90,10 +90,12 @@ public static class ColliderManager
 
             if (CheckIfPointsOverlap(l1, r1, l2, r2))
             {
-                SetCollisionSides(collider, colliderToCheck);
+                if (collider.EnablePhysicsCollions && colliderToCheck.EnablePhysicsCollions)
+                {
+                    SetCollisionSides(collider, colliderToCheck);
+                }
                 collider.OnCollision(colliderToCheck);
             }
-          
         }
     }
 

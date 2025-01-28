@@ -172,7 +172,7 @@ public class EnemyController : Character, IDamagable
         }
     }
 
-    public void ApplyDamage(double amount)
+    public void ApplyDamage(int amount)
     {
         Health -= amount;
         StopAttack();

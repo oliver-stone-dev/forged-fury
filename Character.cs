@@ -21,7 +21,9 @@ public class Character : GameObject
         Right
     }
 
-    private double _startingHealth = 10f;
+    private int _health = 0;
+    private int _startingHealth = 10;
+    private int _maxHealth = 100;
 
     private readonly float _defaultMoveSpeed = 40f;
     private readonly float _maxSpeed = 100f;
@@ -40,7 +42,6 @@ public class Character : GameObject
 
     protected Direction _characterDirection = Direction.Right;
 
-    public Vector2 Position;
     public Vector2 Velocity;
     private Texture2D texture2D;
 
@@ -49,7 +50,24 @@ public class Character : GameObject
     private float _aliveFriction = 0.8f;
     private float _deadFriction = 0.7f;
 
-    public double Health { get; set; }
+    private Vector2 _position;
+    public Vector2 Position
+    {
+        get => _position;
+        set
+        {
+            _position = value;
+            if (_animatedSprite != null) _animatedSprite.Position = value;
+            if (_characterCollider != null) _characterCollider.Position = value;
+        }
+    }
+
+    public int Health 
+    {
+        get => _health;
+        set => _health = value >= _maxHealth ? _maxHealth : value;
+    }
+
     public float Scale { get; set; }
     public float MoveSpeed { get; set; }
     public float Friction { get; set; }
@@ -62,7 +80,7 @@ public class Character : GameObject
         Health = _startingHealth;
 
         MoveSpeed = _defaultMoveSpeed;
-        Position = Vector2.Zero;
+        _position = Vector2.Zero;
         Velocity = Vector2.Zero;
         Scale = 2f;
 
@@ -92,14 +110,12 @@ public class Character : GameObject
         _characterCollider.Name = "solid";
         _characterCollider.Enabled = true;
 
-
         Friction = _aliveFriction;
     }
 
     public override void Update(GameTime gameTime)
     {
         SetDirection();
-        SetSpritePosition();
         SetAnimatorState();
         ClampVelocity();
         ApplyFriction();
@@ -129,18 +145,15 @@ public class Character : GameObject
         if (_characterCollider.LeftCollision && Velocity.X < 0) Velocity.X = 0;
         if (_characterCollider.RightCollision && Velocity.X > 0) Velocity.X = 0;
 
+        Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+/*
         Position.Y += Velocity.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Position.X += Velocity.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        Position.X += Velocity.X * (float)gameTime.ElapsedGameTime.TotalSeconds;*/
     }
 
     private void ApplyFriction()
     {
        Velocity *= Friction;
-    }
-
-    private void SetSpritePosition()
-    {
-        _animatedSprite.Position = this.Position;
     }
 
     private void SetDirection()

@@ -25,6 +25,8 @@ public class Collider : IDisposable
 
     public bool Enabled { get; set; }
 
+    public bool EnablePhysicsCollions { get; set; }
+
     public bool TopCollision { get; set; }
     public bool BottomCollision { get; set; }
     public bool LeftCollision { get; set; }
@@ -37,6 +39,7 @@ public class Collider : IDisposable
         Enabled = false;
         Parent = parent;
         ColliderManager.Add(this);
+        EnablePhysicsCollions = true;
     }
 
     public void Update()

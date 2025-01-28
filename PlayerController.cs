@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace forged_fury;
 
-public class PlayerController : Character, IDamagable, IScoreTracker
+public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
 {
     public int Score { get; set; }
 
@@ -214,8 +214,7 @@ public class PlayerController : Character, IDamagable, IScoreTracker
                 if (damageable != null)
                 {
                     var rand = new Random();
-                    damageable.ApplyDamage(0);
-                    //damageable.ApplyDamage(rand.Next(5,15));
+                    damageable.ApplyDamage(rand.Next(5,15));
                 }
                 _attackColliderFlag = false;
             }
@@ -233,7 +232,7 @@ public class PlayerController : Character, IDamagable, IScoreTracker
         }
     }
 
-    public void ApplyDamage(double amount)
+    public void ApplyDamage(int amount)
     {
         Health -= amount;
     }
@@ -241,5 +240,10 @@ public class PlayerController : Character, IDamagable, IScoreTracker
     public void AddScore(int amount)
     {
         Score += amount;
+    }
+
+    public void Heal(int amount)
+    {
+        Health += amount;
     }
 }

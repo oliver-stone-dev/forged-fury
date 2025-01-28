@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace forged_fury;
 
-public interface IDamagable
+public interface IHealable
 {
-    public void ApplyDamage(int amount);
+    public void Heal(int amount);
 }
