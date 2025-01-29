@@ -91,6 +91,7 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
 
     private void GetInputs()
     {
+        if (_hasSpawned == false) return;
         if (_isDying) return;
         var state = Keyboard.GetState();
 

@@ -50,6 +50,11 @@ public class Character : GameObject
     private float _aliveFriction = 0.8f;
     private float _deadFriction = 0.7f;
 
+    
+    protected bool _hasSpawned = false;
+    private bool _spawning = false;
+    protected bool _spawnAnimationEnabled = false;
+
     private Vector2 _position;
     public Vector2 Position
     {
@@ -116,6 +121,7 @@ public class Character : GameObject
     public override void Update(GameTime gameTime)
     {
         SetDirection();
+        HandleSpawnAnimation();
         SetAnimatorState();
         ClampVelocity();
         ApplyFriction();
@@ -146,9 +152,6 @@ public class Character : GameObject
         if (_characterCollider.RightCollision && Velocity.X > 0) Velocity.X = 0;
 
         Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-/*
-        Position.Y += Velocity.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Position.X += Velocity.X * (float)gameTime.ElapsedGameTime.TotalSeconds;*/
     }
 
     private void ApplyFriction()
@@ -180,6 +183,7 @@ public class Character : GameObject
     private void SetAnimatorState()
     {
         if (_isDying == true) return;
+        if (_spawnAnimationEnabled) return;
 
         if (DeathFlag)
         {
@@ -249,6 +253,29 @@ public class Character : GameObject
         else if (Velocity.Y > 0)
         {
             _animationController.SetNextState(AnimationController.AnimationStates.RunLeft);
+        }
+    }
+
+    private void HandleSpawnAnimation()
+    {
+        if (_spawnAnimationEnabled == false)
+        {
+            _hasSpawned = true;
+            return;
+        }
+        
+        if (_spawning == false)
+        {
+            _animationController.SetNextState(AnimationController.AnimationStates.Spawn);
+            _spawning = true;
+        }
+        else
+        {
+            if (_animationController.IsRunning() == false)
+            {
+                _hasSpawned = true;
+                _spawnAnimationEnabled = false;
+            }
         }
     }
 

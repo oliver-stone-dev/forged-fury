@@ -25,7 +25,8 @@ public class AnimationController
         AttackRightAlt,
         AttackLeftAlt,
         DeathRight,
-        DeathLeft
+        DeathLeft,
+        Spawn
     }
 
     private readonly AnimatedSprite _animatedSprite;
@@ -132,6 +133,14 @@ public class AnimationController
                 _waitToFinish = true;
                 _animatedSprite.StartFrame = 1;
                 break;
+            case (AnimationStates.Spawn):
+                _animatedSprite.AnimationRow = 10;
+                _animatedSprite.MaxFrame = 8;
+                _animatedSprite.Period = 100;
+                _animatedSprite.Loop = false;
+                _waitToFinish = true;
+                _animatedSprite.StartFrame = 1;
+                break;
             default:
                 break;
         }
@@ -231,6 +240,15 @@ public class AnimationController
                     _animatedSprite.Start();
                 }
                 break;
+            case (AnimationStates.Spawn):
+                if (_nextState != _currentState && _animatedSprite.IsRunning() == false)
+                {
+                    _animatedSprite.Stop();
+                    _currentState = _nextState;
+                    SetAnimatedSpriteAnimation(_currentState);
+                    _animatedSprite.Start();
+                }
+                break;
             default:
                 break;
         }
@@ -239,5 +257,10 @@ public class AnimationController
     public void Reset()
     {
         _animatedSprite.Stop();
+    }
+
+    public bool IsRunning()
+    {
+        return _animatedSprite.IsRunning();
     }
 }

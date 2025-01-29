@@ -46,6 +46,8 @@ public class EnemyController : Character, IDamagable
         MinAttackDistance = _defaultAttackDistance;
         _playerToFollow = playerToFollow;
         _attackCollider.OnCollisionAction = OnAttackCollision;
+
+        _spawnAnimationEnabled = true;
     }
 
     public override void Update(GameTime gameTime)
@@ -75,6 +77,7 @@ public class EnemyController : Character, IDamagable
 
     private void FollowTarget()
     {
+        if (_hasSpawned == false) return;
         if (_isDying) return;
         if (_playerToFollow.Health <= 0) return;
 
