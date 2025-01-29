@@ -13,9 +13,13 @@ public class EnemySpawner : SpawnArea
 {
     private readonly Texture2D _spriteSheet;
     private readonly Texture2D _shadowTexture;
+    private readonly ParticleEmitter _particleEmitter;
+    private readonly SoundPlayer _soundPlayer;
 
-    public EnemySpawner (Texture2D spriteSheet,Texture2D shadow)
+    public EnemySpawner (Texture2D spriteSheet,Texture2D shadow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer)
     {
+        _particleEmitter = particleEmitter;
+        _soundPlayer = soundPlayer;
         _spriteSheet = spriteSheet;
         _shadowTexture = shadow;
     }
@@ -24,7 +28,7 @@ public class EnemySpawner : SpawnArea
     {
         var spawnPoint = GetRandomSpawnPoint(player.Position);
 
-        var enemy = new EnemyController(_spriteSheet, _shadowTexture, player);
+        var enemy = new EnemyController(_spriteSheet, _shadowTexture, player, _particleEmitter,_soundPlayer);
         enemy.Position = spawnPoint;
         enemy.MoveSpeed = moveSpeed;
         enemy.Name = "Enemy";

@@ -23,7 +23,10 @@ public class EnemyController : Character, IDamagable
 
     private Collider _attackCollider;
 
-    private float _defaultAttackDistance = 60f;
+    private readonly ParticleEmitter _particleEmitter;
+    private readonly SoundPlayer _soundPlayer;
+
+    private float _defaultAttackDistance = 70f;
     private int _attackHeight = 50;
     private int _attackWidth = 30;
     private int _attackPosition = 40;
@@ -36,8 +39,11 @@ public class EnemyController : Character, IDamagable
 
     public float MinAttackDistance { get; set; }
 
-    public EnemyController(Texture2D texture2D, Texture2D shadow, Character playerToFollow) : base(texture2D, shadow)
+    public EnemyController(Texture2D texture2D, Texture2D shadow, Character playerToFollow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base(texture2D, shadow)
     {
+        _particleEmitter = particleEmitter;
+        _soundPlayer = soundPlayer;
+
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
         _attackCollider.Height = _attackHeight;
@@ -82,6 +88,9 @@ public class EnemyController : Character, IDamagable
         if (_playerToFollow.Health <= 0) return;
 
         TargetPosition = _playerToFollow.Position;
+
+        if (TargetPosition.X > Position.X) _characterDirection = Direction.Right;
+        else if (TargetPosition.X < Position.X) _characterDirection = Direction.Left;
 
         var distance = Vector2.Distance(Position, TargetPosition);
 
@@ -168,8 +177,10 @@ public class EnemyController : Character, IDamagable
                 if (damageable != null)
                 {
                     var rand = new Random();
-                    damageable.ApplyDamage(rand.Next(1, 5));
+                    damageable.ApplyDamage(rand.Next(2, 10));
                 }
+                _particleEmitter.Emit(collider.Position);
+                _soundPlayer.PlayRandomSound();
                 _attackColliderFlag = false;
             }
         }

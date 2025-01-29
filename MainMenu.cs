@@ -11,23 +11,24 @@ namespace forged_fury;
 
 public class MainMenu : GameObject
 {
-    private readonly SpriteFont _font;
     private readonly Sprite _background;
+    private readonly Sprite _startButtonSprite;
+    private readonly Sprite _exitButtonSprite;
+    private readonly Sprite _titleSprite;
 
-    public int Width { get; set; }
-    public int Height { get; set; }
+    public int MenuWidth { get; set; }
+    public int MenuHeight { get; set; }
     public bool StartFlag { get; set; }
     public bool EndFlag { get; set; }
 
     private Rectangle _startButton;
     private Rectangle _exitButton;
 
-    private int _buttonWidth = 40;
-    private int _buttonHeight = 40;
+    private int _buttonWidth = 160;
+    private int _buttonHeight = 64;
 
-    public MainMenu(Texture2D backgroundSprite, GraphicsDeviceManager graphics, SpriteFont font)
+    public MainMenu(Texture2D backgroundSprite, Texture2D startButtonSprite, Texture2D exitButtonSprite,Texture2D titleSprite, GraphicsDeviceManager graphics)
     {
-        _font = font;
         _background = new Sprite(backgroundSprite);
         _background.Position.X = graphics.PreferredBackBufferWidth / 2;
         _background.Position.Y = graphics.PreferredBackBufferHeight / 2;
@@ -35,11 +36,30 @@ public class MainMenu : GameObject
         _background.Height = graphics.PreferredBackBufferHeight;
         _background.Color = Color.Black;
 
-        Width = graphics.PreferredBackBufferWidth;
-        Height = graphics.PreferredBackBufferHeight;
+        MenuWidth = graphics.PreferredBackBufferWidth;
+        MenuHeight = graphics.PreferredBackBufferHeight;
 
-        _startButton = new Rectangle((Width / 2) - 50, 270, Width, Height);
-        _exitButton = new Rectangle((Width / 2) - 36, 370, Width, Height);
+        _startButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, 380, _buttonWidth, _buttonHeight);
+        _exitButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, 500, _buttonWidth, _buttonHeight);
+
+        _startButtonSprite = new Sprite(startButtonSprite);
+        _startButtonSprite.Position.X = _startButton.X + _buttonWidth / 2;
+        _startButtonSprite.Position.Y = _startButton.Y + _buttonHeight / 2;
+        _startButtonSprite.Width = _startButton.Width;
+        _startButtonSprite.Height = _startButton.Height;
+
+        _exitButtonSprite = new Sprite(exitButtonSprite);
+        _exitButtonSprite.Position.X = _exitButton.X + _buttonWidth / 2; ;
+        _exitButtonSprite.Position.Y = _exitButton.Y + _buttonHeight / 2; ;
+        _exitButtonSprite.Width = _exitButton.Width;
+        _exitButtonSprite.Height = _exitButton.Height;
+
+        _titleSprite = new Sprite(titleSprite);
+        _titleSprite.Position.X = graphics.PreferredBackBufferWidth / 2;
+        _titleSprite.Position.Y = graphics.PreferredBackBufferHeight / 2 - 200;
+        _titleSprite.Width = titleSprite.Width;
+        _titleSprite.Height = titleSprite.Height;
+        _titleSprite.Scale = 4f;
     }
 
     public override void Update(GameTime gameTime)
@@ -67,8 +87,9 @@ public class MainMenu : GameObject
     public override void Draw(SpriteBatch spriteBatch)
     {
         _background.Draw(spriteBatch);
-        spriteBatch.DrawString(_font, "START", new Vector2(_startButton.X, _startButton.Y), Color.White);
-        spriteBatch.DrawString(_font, "EXIT", new Vector2(_exitButton.X, _exitButton.Y), Color.White);
+        _startButtonSprite.Draw(spriteBatch);
+        _exitButtonSprite.Draw(spriteBatch);
+        _titleSprite.Draw(spriteBatch);
         base.Draw(spriteBatch);
     }
 }

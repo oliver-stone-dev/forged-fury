@@ -4,15 +4,33 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/../../Level.png</File>
     <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/EnemyAdvancedSheet.png</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/ExitButton.png</File>
     <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/FontMain.spritefont</File>
     <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/Health.png</File>
-    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/Level.png</File>
     <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/PlayerSheet.png</File>
     <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/Shadow.png</File>
     <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/Sparks.png</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/StartButton.png</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/sword1.wav</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/sword2.wav</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/sword3.wav</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/sword4.wav</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/sword5.wav</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/sword6.wav</File>
+    <File>C:/Users/olley/Documents/Game Projects/Game Jams/YouAreTheWeapon/forged-fury/Content/Title.png</File>
   </SourceFiles>
   <DestFiles>
+    <File>Level.png</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

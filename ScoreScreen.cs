@@ -13,6 +13,7 @@ public class ScoreScreen : GameObject
 {
     private readonly SpriteFont _font;
     private readonly Sprite _background;
+    private readonly Sprite _exitButtonSprite;
 
     public int Rounds { get; set; }
     public int Score { get; set; }
@@ -24,12 +25,13 @@ public class ScoreScreen : GameObject
     private Rectangle _startButton;
     private Rectangle _exitButton;
 
-    private int _buttonWidth = 40;
-    private int _buttonHeight = 40;
+
+    private int _buttonWidth = 160;
+    private int _buttonHeight = 64;
 
 
 
-    public ScoreScreen(Texture2D backgroundSprite, GraphicsDeviceManager graphics, SpriteFont font)
+    public ScoreScreen(Texture2D backgroundSprite,Texture2D exitButtonSprite, GraphicsDeviceManager graphics, SpriteFont font)
     {
         _font = font;
         _background = new Sprite(backgroundSprite);
@@ -42,7 +44,13 @@ public class ScoreScreen : GameObject
         Width = graphics.PreferredBackBufferWidth;
         Height = graphics.PreferredBackBufferHeight;
 
-        _exitButton = new Rectangle((Width / 2) - 36, 550, Width, Height);
+        _exitButton = new Rectangle((Width / 2) - _buttonWidth / 2, 450, _buttonWidth, _buttonHeight);
+
+        _exitButtonSprite = new Sprite(exitButtonSprite);
+        _exitButtonSprite.Position.X = _exitButton.X + _buttonWidth / 2; ;
+        _exitButtonSprite.Position.Y = _exitButton.Y + _buttonHeight / 2; ;
+        _exitButtonSprite.Width = _exitButton.Width;
+        _exitButtonSprite.Height = _exitButton.Height;
     }
 
     public override void Update(GameTime gameTime)
@@ -65,9 +73,10 @@ public class ScoreScreen : GameObject
     public override void Draw(SpriteBatch spriteBatch)
     {
         _background.Draw(spriteBatch);
-        spriteBatch.DrawString(_font, $"Rounds Complete: {Rounds}", new Vector2(Width / 2, 270), Color.White);
-        spriteBatch.DrawString(_font, $"Score: {Score}", new Vector2(Width / 2, 400), Color.White);
-        spriteBatch.DrawString(_font, "EXIT", new Vector2(_exitButton.X, _exitButton.Y), Color.White);
+        spriteBatch.DrawString(_font, $"YOU DIED!", new Vector2((Width / 2) - 70, 150), Color.White);
+        spriteBatch.DrawString(_font, $"Rounds Complete: {Rounds}", new Vector2((Width / 2) - 120, 250), Color.White);
+        spriteBatch.DrawString(_font, $"Score: {Score}", new Vector2((Width / 2) - 50, 350), Color.White);
+        _exitButtonSprite.Draw(spriteBatch);
         base.Draw(spriteBatch);
     }
 }

@@ -84,10 +84,10 @@ public class RoundManager : GameObject
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.DrawString(_font, $"Round: {CurrentRound} ", new Vector2(170, 15), Color.White);
-        spriteBatch.DrawString(_font, $"Enemies Remaining: {EnemiesRemaining}", new Vector2(360, 15), Color.White);
-        spriteBatch.DrawString(_font, $"Health: {_player.Health} ", new Vector2(700, 15), Color.White);
-        spriteBatch.DrawString(_font, $"Score: {_player.Score} ", new Vector2(960, 15), Color.White);
+        spriteBatch.DrawString(_font, $"Round: {CurrentRound} ", new Vector2(200, 15), Color.White);
+        spriteBatch.DrawString(_font, $"Enemies Remaining: {EnemiesRemaining}", new Vector2(720, 15), Color.White);
+        spriteBatch.DrawString(_font, $"Health: {_player.Health} ", new Vector2(200, 660), Color.White);
+        spriteBatch.DrawString(_font, $"Score: {_player.Score} ", new Vector2(950, 660), Color.White);
         base.Draw(spriteBatch);
     }
 

@@ -18,6 +18,7 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
     private bool _attacking = false;
 
     private readonly ParticleEmitter _particleEmitter;
+    private readonly SoundPlayer _soundPlayer;
 
     private Collider _attackCollider;
 
@@ -46,9 +47,10 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
 
     private Vector2 _movement = Vector2.Zero;
 
-    public PlayerController(Texture2D texture2D,Texture2D shadow, ParticleEmitter particleEmitter) : base(texture2D, shadow)
+    public PlayerController(Texture2D texture2D,Texture2D shadow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base(texture2D, shadow)
     {
         _particleEmitter = particleEmitter;
+        _soundPlayer = soundPlayer;
 
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
@@ -222,6 +224,7 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
                     damageable.ApplyDamage(rand.Next(5,15));
                 }
                 _particleEmitter.Emit(collider.Position);
+                _soundPlayer.PlayRandomSound();
                 _attackColliderFlag = false;
             }
         }
@@ -241,6 +244,7 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
     public void ApplyDamage(int amount)
     {
         Health -= amount;
+        if (Health <= 0) Health = 0;
     }
 
     public void AddScore(int amount)
