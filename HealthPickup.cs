@@ -12,7 +12,7 @@ public class HealthPickup : GameObject
 {
     private readonly Sprite _sprite;
     private readonly Collider _collider;
-    private int _defaultHealAmount = 5;
+    private int _defaultHealAmount = 10;
 
     private int _itemAliveMs = 5000;
     private int _itemAliveTimer = 0;

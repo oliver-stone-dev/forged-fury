@@ -36,9 +36,13 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
 
     private bool _hasDashed = false;
     private bool _dashButtonPressed = false;
-    private int _dashCoolDownMs = 2000;
+    private int _dashCoolDownMs = 2500;
     private int _dashCooldownTimer = 0;
     private float _dashAmount = 6f;
+
+    private int _invulnerableMs = 500;
+    private int _invulnerableTimer = 0;
+    private bool invulnerable = false;
 
     private bool _collisionTop = false;
     private bool _collisionBottom = false;
@@ -64,6 +68,7 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
         _animatedSprite.Scale = Scale;
 
         _animationController = new(_animatedSprite);
+        _animationController.AttackFrames = 3;
 
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
@@ -75,6 +80,8 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
         _attacking = false;
 
         HasAltAttack = true;
+
+        _animationController.AttackPeriod = 100;
     }
 
     public override void Update(GameTime gameTime)
@@ -85,6 +92,7 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
         CheckHealth();
         ResetAttack(gameTime);
         ResetDash(gameTime);
+        ResetInvulnerablilty(gameTime);
         base.Update(gameTime);
     }
 
@@ -181,6 +189,8 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
         Velocity *= _dashAmount;
         _hasDashed = true;
         _dashCooldownTimer = _dashCoolDownMs;
+        invulnerable = true;
+        _invulnerableTimer = _invulnerableMs;
     }
 
     private void ResetDash(GameTime gameTime)
@@ -193,6 +203,18 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
         {
             _dashCooldownTimer = _dashCoolDownMs;
             _hasDashed = false;
+        }
+    }
+
+    private void ResetInvulnerablilty(GameTime gameTime)
+    {
+        if (invulnerable == false) return;
+
+        _invulnerableTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+        if (_invulnerableTimer <= 0)
+        {
+            invulnerable = false;
         }
     }
 
@@ -256,6 +278,8 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
 
     public void ApplyDamage(int amount)
     {
+        if (invulnerable) return;
+
         Health -= amount;
         if (Health <= 0) Health = 0;
     }

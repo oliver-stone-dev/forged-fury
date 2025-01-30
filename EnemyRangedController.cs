@@ -9,44 +9,40 @@ using System.Diagnostics;
 
 namespace forged_fury;
 
-public class EnemyController : Character, IDamagable
+public class EnemyRangedController : Character, IDamagable
 {
     private readonly Character _playerToFollow;
 
-    private int _attackColliderDelayMs = 350;
-    private int _attackDelayTimer = 0;
-    private bool _attackColliderFlag = false;
+    private float _defaultAttackDistance = 400f;
 
-    private int _attackCooldownMs = 1000;
+    private const int _arrowLaunchDelayMs = 500;
+    private int _arrowLaunchTimer = 0;
+    private bool _arrowLaunchFlag = false;
+
+    private const int _attackCooldownMs = 2500;
     private bool _hasAttackedFlag = false;
     private int _attackCooldownTimer = 0;
-
-    private Collider _attackCollider;
 
     private readonly ParticleEmitter _particleEmitter;
     private readonly SoundPlayer _soundPlayer;
 
-    private float _defaultAttackDistance = 70f;
-    private int _attackHeight = 50;
-    private int _attackWidth = 30;
-    private int _attackPosition = 40;
+    private int _scoreReward = 2;
 
-    private int _scoreReward = 1;
+    private float _hitBackAmount = 1000f;
 
-    private float _hitBackAmount = 1500f;
+    private float _arrowSpeed = 500f;
 
     public Vector2 TargetPosition { get; set; }
 
     public float MinAttackDistance { get; set; }
 
-    public EnemyController(Character playerToFollow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base()
+    public EnemyRangedController(Character playerToFollow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base()
     {
         _particleEmitter = particleEmitter;
         _soundPlayer = soundPlayer;
 
-        var spriteAsset = AssetManager.Textures.Get("EnemyAdvancedSheet");
+        var spriteAsset = AssetManager.Textures.Get("EnemyRangedSheet");
         var spriteSheet = spriteAsset!.AssetObject;
-        if (spriteSheet == null) return;
         if (spriteSheet == null) return;
 
         _animatedSprite = new AnimatedSprite(spriteSheet);
@@ -58,42 +54,24 @@ public class EnemyController : Character, IDamagable
         _animatedSprite.Scale = Scale;
 
         _animationController = new(_animatedSprite);
+        _animationController.AttackFrames = 4;
 
-        _attackCollider = new(this);
-        _attackCollider.Enabled = false;
-        _attackCollider.Height = _attackHeight;
-        _attackCollider.Width = _attackWidth;
-
-        MinAttackDistance = _defaultAttackDistance;
         _playerToFollow = playerToFollow;
-        _attackCollider.OnCollisionAction = OnAttackCollision;
 
         _spawnAnimationEnabled = true;
+
+        MinAttackDistance = _defaultAttackDistance;
+
+        _animationController.AttackPeriod = 200;
     }
 
     public override void Update(GameTime gameTime)
     {
-        SetAttackColliderPosition();
         FollowTarget();
         ResetAttack(gameTime);
+        HandleArrowSpawning(gameTime);
         CheckHealth();
         base.Update(gameTime);
-    }
-
-    private void SetAttackColliderPosition()
-    {
-        if (_characterDirection == Character.Direction.Right)
-        {
-            var pos = Position;
-            pos.X += _attackPosition;
-            _attackCollider.Position = pos;
-        }
-        else
-        {
-            var pos = Position;
-            pos.X -= _attackPosition;
-            _attackCollider.Position = pos;
-        }
     }
 
     private void FollowTarget()
@@ -128,8 +106,9 @@ public class EnemyController : Character, IDamagable
 
         _attackFlag = true;
         _hasAttackedFlag = true;
+        _arrowLaunchFlag = true;
         _attackCooldownTimer = _attackCooldownMs;
-        _attackDelayTimer = _attackColliderDelayMs;
+        _arrowLaunchTimer = _arrowLaunchDelayMs;
     }
 
     private void ResetAttack(GameTime gameTime)
@@ -137,16 +116,6 @@ public class EnemyController : Character, IDamagable
         if (_hasAttackedFlag == false) return;
         
         _attackCooldownTimer -= gameTime.ElapsedGameTime.Milliseconds;
-        _attackDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
-
-        if (_attackDelayTimer <= 0)
-        {
-            if (_attackCollider.Enabled == false)
-            {
-                _attackColliderFlag = true;
-                _attackCollider.Enabled = true;
-            }
-        }
 
         if (_attackCooldownTimer <= 0)
         {
@@ -159,9 +128,6 @@ public class EnemyController : Character, IDamagable
         _hasAttackedFlag = false;
         _attackFlag = false;
         _attackCooldownTimer = _attackCooldownMs;
-        _attackDelayTimer = _attackColliderDelayMs;
-        _attackColliderFlag = false;
-        _attackCollider.Enabled = false;
     }
 
     private void CheckHealth()
@@ -180,31 +146,9 @@ public class EnemyController : Character, IDamagable
         }
     }
 
-    private void OnAttackCollision(Collider collider)
-    {
-        if (_attackColliderFlag)
-        {
-            var hit = collider.Parent;
-
-            if (hit.Name == "Player")
-            {
-                var damageable = (IDamagable)hit;
-                if (damageable != null)
-                {
-                    var rand = new Random();
-                    damageable.ApplyDamage(rand.Next(2, 10));
-                }
-                _particleEmitter.Emit(collider.Position);
-                _soundPlayer.PlayRandomSound();
-                _attackColliderFlag = false;
-            }
-        }
-    }
-
     public void ApplyDamage(int amount)
     {
         Health -= amount;
-        StopAttack();
         HitBack();
     }
 
@@ -214,5 +158,31 @@ public class EnemyController : Character, IDamagable
         var dir = Vector2.Normalize(dif);
         var v = dir * _hitBackAmount;
         Velocity = -Vector2.Subtract(Velocity, v);
+    }
+
+    public void HandleArrowSpawning(GameTime gameTime)
+    {
+        if (_arrowLaunchFlag)
+        {
+            _arrowLaunchTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+            if (_arrowLaunchTimer <= 0)
+            {
+                SpawnArrow(_playerToFollow.Position);
+                _arrowLaunchFlag = false;
+            }
+        }
+    }
+
+    public void SpawnArrow(Vector2 targetPosition)
+    {
+        var arrow = new Arrow();
+
+        var dif = Vector2.Subtract(Position, TargetPosition);
+        var dir = Vector2.Normalize(dif);
+        var v = dir * _arrowSpeed;
+        arrow.Velocity = Vector2.Subtract(Velocity, v);
+
+        arrow.Position = Position;
     }
 }

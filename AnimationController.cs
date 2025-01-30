@@ -34,6 +34,10 @@ public class AnimationController
     private AnimationStates _nextState;
     private bool _waitToFinish = false;
 
+    public int AttackFrames { get; set; }
+
+    public int AttackPeriod { get; set; }
+
     public AnimationController(AnimatedSprite animatedSprite)
     {
         _animatedSprite = animatedSprite;
@@ -87,16 +91,16 @@ public class AnimationController
                 break;
             case (AnimationStates.AttackRight):
                 _animatedSprite.AnimationRow = 4;
-                _animatedSprite.MaxFrame = 3;
-                _animatedSprite.Period = 100;
+                _animatedSprite.MaxFrame = AttackFrames;
+                _animatedSprite.Period = AttackPeriod;
                 _animatedSprite.Loop = false;
                 _waitToFinish = true;
                 _animatedSprite.StartFrame = 1;
                 break;
             case (AnimationStates.AttackLeft):
                 _animatedSprite.AnimationRow = 5;
-                _animatedSprite.MaxFrame = 3;
-                _animatedSprite.Period = 100;
+                _animatedSprite.MaxFrame = AttackFrames;
+                _animatedSprite.Period = AttackPeriod;
                 _animatedSprite.Loop = false;
                 _waitToFinish = true;
                 _animatedSprite.StartFrame = 1;

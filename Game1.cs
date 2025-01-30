@@ -27,6 +27,8 @@ public class Game1 : Game
     private Texture2D _startButton;
     private Texture2D _endButton;
     private Texture2D _title;
+    private Texture2D _arrowLeft;
+    private Texture2D _arrowRight;
     private SoundEffect _sword1effect;
     private SoundEffect _sword2effect;
     private SoundEffect _sword3effect;
@@ -49,6 +51,8 @@ public class Game1 : Game
     private ParticleEmitter _particleEmitter;
     private SoundPlayer _soundPlayer;
     private PlayerController _player;
+
+    private Timer _roundDelayTimer;
 
     private GameStates _gameState = GameStates.Menu;
 
@@ -94,6 +98,8 @@ public class Game1 : Game
         _startButton = Content.Load<Texture2D>("StartButton");
         _endButton = Content.Load<Texture2D>("ExitButton");
         _title = Content.Load<Texture2D>("Title");
+        _arrowLeft = Content.Load<Texture2D>("ArrowLeft");
+        _arrowRight = Content.Load<Texture2D>("ArrowRight");
         font = Content.Load<SpriteFont>("FontMain");
         _menuMusic = Content.Load<Song>("menuTheme");
         _gameMusic = Content.Load<Song>("gameTheme");
@@ -119,6 +125,8 @@ public class Game1 : Game
         AssetManager.Textures.Add(_startButton, _startButton.Name);
         AssetManager.Textures.Add(_endButton, _endButton.Name);
         AssetManager.Textures.Add(_title, _title.Name);
+        AssetManager.Textures.Add(_arrowLeft, _arrowLeft.Name);
+        AssetManager.Textures.Add(_arrowRight, _arrowRight.Name);
         AssetManager.Textures.Add(_debugTexture, "DebugTexture");
         AssetManager.SoundEffects.Add(_sword1effect, _sword1effect.Name);
         AssetManager.SoundEffects.Add(_sword2effect, _sword2effect.Name);
@@ -132,8 +140,10 @@ public class Game1 : Game
 
         //Load Main Screen
         _mainMenu = new MainMenu(_graphics);
-        MediaPlayer.Volume = 0.0f;
+        MediaPlayer.Volume = 0.1f;
         MediaPlayer.Play(_menuMusic);
+
+        _roundDelayTimer = new(2000);
     }
 
 
@@ -142,6 +152,8 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        _roundDelayTimer.Update(gameTime);
+
         switch (_gameState)
         {
             case (GameStates.Menu):
@@ -149,18 +161,25 @@ public class Game1 : Game
                 break;
             case (GameStates.Start):
                 InitGame();
-                MediaPlayer.Volume = 0.0f;
+                MediaPlayer.Volume = 0.1f;
                 MediaPlayer.Play(_gameMusic);
                 _gameState = GameStates.LoadNextRound;
+                _roundDelayTimer.Start();
                 break;
             case (GameStates.LoadNextRound):
-                _roundManager.NextRound();
-                _roundManager.StartRound();
-                _gameState = GameStates.PlayRound;
+                if (_roundDelayTimer.Finished)
+                {
+                    _roundManager.NextRound();
+                    _roundManager.StartRound();
+                    _gameState = GameStates.PlayRound;
+                }
                 break;
             case (GameStates.PlayRound):
-                if (_roundManager.RoundFinishedFlag) 
+                if (_roundManager.RoundFinishedFlag)
+                {
+                    _roundDelayTimer.Start();
                     _gameState = GameStates.LoadNextRound;
+                }
                 if (_gameManager.GameEndFlag) 
                     _gameState = GameStates.End;
                 break;

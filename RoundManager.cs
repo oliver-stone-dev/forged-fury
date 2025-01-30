@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -27,12 +28,16 @@ public class RoundManager : GameObject
     private int _healthPickupCounter = 0;
 
     private const int _enemyStartHealth = 10;
-    private const int _enemiesRemainingDefault = 10;
+    private const int _enemiesRemainingDefault = 5;
 
     private int _enemiesAlive = 0;
 
     private const float _spawnFactor = 0.25f;
     private const float _healthFactor = 0.05f;
+
+    private const int _maxEnemiesPerWave = 10;
+
+    private const float _rangedEnemyHealthFactor = 0.5f;
 
     public int CurrentRound { get; set; }
 
@@ -76,6 +81,7 @@ public class RoundManager : GameObject
             {
                 EnemiesRemaining = _enemiesRemainingDefault + (int)(CurrentRound * 1.5f);
                 RoundFinishedFlag = true;
+                _roundStarted = false;
             }        
         }
 
@@ -123,31 +129,13 @@ public class RoundManager : GameObject
 
     private void SpawnWaveOfEnemies(int round)
     {
-        int max = 1;
+        var rand = new Random();
+
+        int max = CurrentRound + 1;
+        if (max > _maxEnemiesPerWave) max = _maxEnemiesPerWave;
+
         int toSpawn = 0;
 
-        if (round <= 5)
-        {
-            max = 2;
-        }
-        else if (round <= 10)
-        {
-            max = 3;
-        }
-        else if (round <= 20)
-        {
-            max = 4;
-        }
-        else if (round <= 30)
-        {
-            max = 5;
-        }
-        else
-        {
-            max = 6;
-        }
-
-        var rand = new Random();
         toSpawn = rand.Next(1,max + 1);
 
         if (toSpawn > EnemiesRemaining)
@@ -155,16 +143,27 @@ public class RoundManager : GameObject
             toSpawn = EnemiesRemaining;
         }
 
+        SpawnEnemies(toSpawn);
         EnemiesRemaining -= toSpawn;
-
-        SpawnEnemies(toSpawn); 
     }
 
     private void SpawnEnemies(int count)
     {
+        var chanceOfRanged = 0.25f;
+        int rangedCount = 0;
+
         for (int i = 0; i < count; i++)
         {
-            _enemySpawner.SpawnEnemy(GetEnemieHealth(CurrentRound), 20f,_player);
+            if (GetRandomBool(chanceOfRanged) && CurrentRound > 1 && rangedCount < 4) 
+            {
+                var health = Convert.ToInt32(GetEnemieHealth(CurrentRound) * _rangedEnemyHealthFactor);
+                _enemySpawner.SpawnRangedEnemy(health, 10f, _player);
+                rangedCount++;
+            }
+            else
+            {
+                _enemySpawner.SpawnAdvancedEnemy(GetEnemieHealth(CurrentRound), 20f, _player);
+            }
         }
     }
 
@@ -201,5 +200,15 @@ public class RoundManager : GameObject
     private void SpawnHealthPickup()
     {
         _pickupSpawner.SpawnPickup(_player);
+    }
+
+    private bool GetRandomBool(float probabilityTrue = 0.5f)
+    {
+        var rand = new Random();
+        var randomFloat = (float)rand.NextDouble();
+
+        if (randomFloat <= probabilityTrue) return true;
+
+        return false;
     }
 }

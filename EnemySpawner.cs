@@ -20,11 +20,22 @@ public class EnemySpawner : SpawnArea
         _soundPlayer = soundPlayer;
     }
 
-    public void SpawnEnemy(int health, float moveSpeed, PlayerController player)
+    public void SpawnAdvancedEnemy(int health, float moveSpeed, PlayerController player)
     {
         var spawnPoint = GetRandomSpawnPoint(player.Position);
 
-        var enemy = new EnemyController(player, _particleEmitter,_soundPlayer);
+        var enemy = new EnemyAdvancedController(player, _particleEmitter,_soundPlayer);
+        enemy.Position = spawnPoint;
+        enemy.MoveSpeed = moveSpeed;
+        enemy.Name = "Enemy";
+        enemy.Health = health;
+    }
+
+    public void SpawnRangedEnemy(int health, float moveSpeed, PlayerController player)
+    {
+        var spawnPoint = GetRandomSpawnPoint(player.Position);
+
+        var enemy = new EnemyRangedController(player, _particleEmitter, _soundPlayer);
         enemy.Position = spawnPoint;
         enemy.MoveSpeed = moveSpeed;
         enemy.Name = "Enemy";
