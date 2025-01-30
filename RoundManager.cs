@@ -15,7 +15,7 @@ public class RoundManager : GameObject
     private readonly PlayerController _player;
     private readonly SpriteFont _font;
     private readonly EnemySpawner _enemySpawner;
-    private readonly PickupSpawner _pickupSpawner;
+    private readonly HealthPickupSpawner _pickupSpawner;
 
     private bool _roundStarted = false;
     private const int _waveLengthMs = 10000;
@@ -40,7 +40,7 @@ public class RoundManager : GameObject
 
     public bool RoundFinishedFlag { get; set; }
 
-    public RoundManager(PlayerController player, SpriteFont font, EnemySpawner enemySpawner, PickupSpawner pickupSpawner)
+    public RoundManager(PlayerController player, SpriteFont font, EnemySpawner enemySpawner, HealthPickupSpawner pickupSpawner)
     {
         _font = font;
         _player = player;

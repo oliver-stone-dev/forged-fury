@@ -33,8 +33,9 @@ public class Character : GameObject
     private int _deathDelayMs = 800;
     private int _deathDelayTimer = 0;
 
-    private AnimationController _animationController;
-    private readonly AnimatedSprite _animatedSprite;
+    protected AnimationController _animationController;
+    protected AnimatedSprite _animatedSprite;
+
     private readonly Sprite _shadow;
     protected Collider _characterCollider;
 
@@ -80,7 +81,7 @@ public class Character : GameObject
 
     public bool HasAltAttack { get; set; }
 
-    public Character(Texture2D texture2D, Texture2D shadow) : base()
+    public Character() : base()
     {
         Health = _startingHealth;
 
@@ -89,24 +90,11 @@ public class Character : GameObject
         Velocity = Vector2.Zero;
         Scale = 2f;
 
-        _animatedSprite = new AnimatedSprite(texture2D);
-        _animatedSprite.Position = this.Position;
-        _animatedSprite.FrameHeight = 64;
-        _animatedSprite.FrameWidth = 64;
-        _animatedSprite.Width = 64;
-        _animatedSprite.Height = 64;
-        _animatedSprite.Scale = Scale;
+        var shadowAsset = AssetManager.Textures.Get("Shadow");
+        var shadowSprite = shadowAsset!.AssetObject;
+        if (shadowSprite == null) return;
 
-        _shadow = new Sprite(shadow);
-        _animatedSprite.Position = this.Position;
-        _animatedSprite.FrameHeight = 64;
-        _animatedSprite.FrameWidth = 64;
-        _animatedSprite.Width = 64;
-        _animatedSprite.Height = 64;
-        _animatedSprite.Scale = Scale;
-
-
-        _animationController = new(_animatedSprite);
+        _shadow = new Sprite(shadowSprite);
 
         _characterCollider = new Collider(this);
         _characterCollider.Position = Position;
@@ -128,8 +116,8 @@ public class Character : GameObject
         SetShadowPosition();
         Move(gameTime);
         OnDeath(gameTime);
-        _animationController.Update(gameTime);
-        _animatedSprite.Update(gameTime);
+        _animationController!.Update(gameTime);
+        _animatedSprite!.Update(gameTime);
         _characterCollider.Position = Position;
     }
 
@@ -182,6 +170,7 @@ public class Character : GameObject
     //TO DO - Refactor how animator class works
     private void SetAnimatorState()
     {
+        if (_animationController == null) return;
         if (_isDying == true) return;
         if (_spawnAnimationEnabled) return;
 
@@ -258,6 +247,8 @@ public class Character : GameObject
 
     private void HandleSpawnAnimation()
     {
+        if (_animationController == null) return;
+
         if (_spawnAnimationEnabled == false)
         {
             _hasSpawned = true;
@@ -288,7 +279,7 @@ public class Character : GameObject
 
     protected void ResetAnimation()
     {
-        _animationController.Reset();
+        _animationController!.Reset();
     }
 
     private void OnDeath(GameTime gameTime)

@@ -20,11 +20,15 @@ public class Environment : GameObject
     private Collider _leftWallCollider;
     private Collider _rightWallCollider;
 
-    public Environment(Texture2D backgroundSprite, Texture2D levelSprite, GraphicsDeviceManager graphics, SpriteFont font) :base()
+    public Environment(GraphicsDeviceManager graphics, SpriteFont font) :base()
     {
         _font = font;
 
         //Background sprite
+        var backgroundAsset = AssetManager.Textures.Get("WindowBackground");
+        var backgroundSprite = backgroundAsset!.AssetObject;
+        if (backgroundSprite == null) return;
+
         _background = new Sprite(backgroundSprite);
         _background.Position.X = graphics.PreferredBackBufferWidth / 2;
         _background.Position.Y = graphics.PreferredBackBufferHeight / 2;
@@ -33,6 +37,10 @@ public class Environment : GameObject
         _background.Color = Color.Black;
 
         //Level Sprite
+        var levelAsset = AssetManager.Textures.Get("Level");
+        var levelSprite = levelAsset!.AssetObject;
+        if (levelSprite == null) return;
+
         _level = new Sprite(levelSprite);
         _level.Position.X = graphics.PreferredBackBufferWidth / 2;
         _level.Position.Y = graphics.PreferredBackBufferHeight / 2;
@@ -81,5 +89,4 @@ public class Environment : GameObject
         _level.Draw(spriteBatch);
         base.Draw(spriteBatch);
     }
-
 }

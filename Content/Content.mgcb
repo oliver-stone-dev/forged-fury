@@ -25,6 +25,30 @@
 /processorParam:TextureFormat=Color
 /build:../../Level.png;Level.png
 
+#begin ArrowLeft.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ArrowLeft.png
+
+#begin ArrowRight.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ArrowRight.png
+
 #begin EnemyAdvancedSheet.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -36,6 +60,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:EnemyAdvancedSheet.png
+
+#begin EnemyRangedSheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:EnemyRangedSheet.png
 
 #begin ExitButton.png
 /importer:TextureImporter
@@ -56,6 +92,12 @@
 /processorParam:TextureFormat=Compressed
 /build:FontMain.spritefont
 
+#begin gameTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:gameTheme.mp3
+
 #begin Health.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -67,6 +109,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Health.png
+
+#begin menuTheme.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:menuTheme.mp3
 
 #begin PlayerSheet.png
 /importer:TextureImporter

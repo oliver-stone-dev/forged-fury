@@ -15,25 +15,26 @@ public class ScoreScreen : GameObject
     private readonly Sprite _background;
     private readonly Sprite _exitButtonSprite;
 
-    public int Rounds { get; set; }
-    public int Score { get; set; }
-
-    public int Width { get; set; }
-    public int Height { get; set; }
-    public bool EndFlag { get; set; }
-
     private Rectangle _startButton;
     private Rectangle _exitButton;
-
 
     private int _buttonWidth = 160;
     private int _buttonHeight = 64;
 
+    public int Rounds { get; set; }
+    public int Score { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public bool EndFlag { get; set; }
 
-
-    public ScoreScreen(Texture2D backgroundSprite,Texture2D exitButtonSprite, GraphicsDeviceManager graphics, SpriteFont font)
+    public ScoreScreen(GraphicsDeviceManager graphics, SpriteFont font)
     {
         _font = font;
+
+        var backgroundAsset = AssetManager.Textures.Get("WindowBackground");
+        var backgroundSprite = backgroundAsset!.AssetObject;
+        if (backgroundSprite == null) return;
+
         _background = new Sprite(backgroundSprite);
         _background.Position.X = graphics.PreferredBackBufferWidth / 2;
         _background.Position.Y = graphics.PreferredBackBufferHeight / 2;
@@ -46,7 +47,11 @@ public class ScoreScreen : GameObject
 
         _exitButton = new Rectangle((Width / 2) - _buttonWidth / 2, 450, _buttonWidth, _buttonHeight);
 
-        _exitButtonSprite = new Sprite(exitButtonSprite);
+        var endBtnAsset = AssetManager.Textures.Get("ExitButton");
+        var endSprite = endBtnAsset!.AssetObject;
+        if (endSprite == null) return;
+
+        _exitButtonSprite = new Sprite(endSprite);
         _exitButtonSprite.Position.X = _exitButton.X + _buttonWidth / 2; ;
         _exitButtonSprite.Position.Y = _exitButton.Y + _buttonHeight / 2; ;
         _exitButtonSprite.Width = _exitButton.Width;

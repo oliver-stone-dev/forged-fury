@@ -47,10 +47,23 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
 
     private Vector2 _movement = Vector2.Zero;
 
-    public PlayerController(Texture2D texture2D,Texture2D shadow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base(texture2D, shadow)
+    public PlayerController(ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base()
     {
         _particleEmitter = particleEmitter;
         _soundPlayer = soundPlayer;
+
+        var spriteAsset = AssetManager.Textures.Get("PlayerSheet");
+        var spriteSheet = spriteAsset!.AssetObject;
+        if (spriteSheet == null) return;
+        _animatedSprite = new AnimatedSprite(spriteSheet);
+        _animatedSprite.Position = this.Position;
+        _animatedSprite.FrameHeight = 64;
+        _animatedSprite.FrameWidth = 64;
+        _animatedSprite.Width = 64;
+        _animatedSprite.Height = 64;
+        _animatedSprite.Scale = Scale;
+
+        _animationController = new(_animatedSprite);
 
         _attackCollider = new(this);
         _attackCollider.Enabled = false;

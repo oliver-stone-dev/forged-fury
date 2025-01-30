@@ -10,16 +10,22 @@ namespace forged_fury;
 
 public class ParticleEmitter
 {
-    private readonly Texture2D _spriteSheet;
+    private readonly Texture2D _particleSpriteSheet;
 
-    public ParticleEmitter(Texture2D spriteSheet)
+    public ParticleEmitter()
     {
-        _spriteSheet = spriteSheet;
+        var particleAsset = AssetManager.Textures.Get("Sparks");
+        var particleSprite = particleAsset!.AssetObject;
+        if (particleSprite == null) return;
+
+        _particleSpriteSheet = particleSprite;
     }
 
     public void Emit(Vector2 position)
     {
-        var sparkParticles = new Sparks(_spriteSheet);
+        if (_particleSpriteSheet == null) return;
+
+        var sparkParticles = new Sparks(_particleSpriteSheet);
         sparkParticles.Position = position;
         sparkParticles.Start();
     }

@@ -39,10 +39,25 @@ public class EnemyController : Character, IDamagable
 
     public float MinAttackDistance { get; set; }
 
-    public EnemyController(Texture2D texture2D, Texture2D shadow, Character playerToFollow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base(texture2D, shadow)
+    public EnemyController(Character playerToFollow, ParticleEmitter particleEmitter, SoundPlayer soundPlayer) : base()
     {
         _particleEmitter = particleEmitter;
         _soundPlayer = soundPlayer;
+
+        var spriteAsset = AssetManager.Textures.Get("EnemyAdvancedSheet");
+        var spriteSheet = spriteAsset!.AssetObject;
+        if (spriteSheet == null) return;
+        if (spriteSheet == null) return;
+
+        _animatedSprite = new AnimatedSprite(spriteSheet);
+        _animatedSprite.Position = this.Position;
+        _animatedSprite.FrameHeight = 64;
+        _animatedSprite.FrameWidth = 64;
+        _animatedSprite.Width = 64;
+        _animatedSprite.Height = 64;
+        _animatedSprite.Scale = Scale;
+
+        _animationController = new(_animatedSprite);
 
         _attackCollider = new(this);
         _attackCollider.Enabled = false;

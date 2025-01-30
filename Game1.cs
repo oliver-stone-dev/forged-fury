@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace forged_fury;
 
@@ -18,6 +19,7 @@ public class Game1 : Game
     private Texture2D _levelBackgroundSprite;
     private Texture2D _playerSpriteSheet;
     private Texture2D _enemyAdvancedSheet;
+    private Texture2D _enemyRangedSheet;
     private Texture2D _debugTexture;
     private Texture2D _shadowTexture;
     private Texture2D _healthTexture;
@@ -31,6 +33,8 @@ public class Game1 : Game
     private SoundEffect _sword4effect;
     private SoundEffect _sword5effect;
     private SoundEffect _sword6effect;
+    private Song _menuMusic;
+    private Song _gameMusic;
     private const int _levelWidth = 448;
     private const int _levelHeight = 288;
     private const float _spriteScale = 2f;
@@ -41,7 +45,7 @@ public class Game1 : Game
     private GameManager _gameManager;
     private RoundManager _roundManager;
     private EnemySpawner _enemySpawner;
-    private PickupSpawner _pickupSpawner;
+    private HealthPickupSpawner _pickupSpawner;
     private ParticleEmitter _particleEmitter;
     private SoundPlayer _soundPlayer;
     private PlayerController _player;
@@ -78,33 +82,58 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        _levelBackgroundSprite = Content.Load<Texture2D>("Level");
         _windowBackground = new Texture2D(GraphicsDevice, 1, 1);
-        _windowBackground.SetData(new Color[] { Color.White });
+        _debugTexture = new Texture2D(GraphicsDevice, 1, 1);
+        _levelBackgroundSprite = Content.Load<Texture2D>("Level");
         _playerSpriteSheet = Content.Load<Texture2D>("PlayerSheet");
         _enemyAdvancedSheet = Content.Load<Texture2D>("EnemyAdvancedSheet");
+        _enemyRangedSheet = Content.Load<Texture2D>("EnemyRangedSheet");
         _shadowTexture = Content.Load<Texture2D>("Shadow");
         _healthTexture = Content.Load<Texture2D>("Health");
         _sparks = Content.Load<Texture2D>("Sparks");
         _startButton = Content.Load<Texture2D>("StartButton");
         _endButton = Content.Load<Texture2D>("ExitButton");
         _title = Content.Load<Texture2D>("Title");
+        font = Content.Load<SpriteFont>("FontMain");
+        _menuMusic = Content.Load<Song>("menuTheme");
+        _gameMusic = Content.Load<Song>("gameTheme");
         _sword1effect = Content.Load<SoundEffect>("Sword1");
-        _sword2effect = Content.Load<SoundEffect>("Sword2"); ;
-        _sword3effect = Content.Load<SoundEffect>("Sword3"); ;
-        _sword4effect = Content.Load<SoundEffect>("Sword4"); ;
-        _sword5effect = Content.Load<SoundEffect>("Sword5"); ;
-        _sword6effect = Content.Load<SoundEffect>("Sword6"); ;
+        _sword2effect = Content.Load<SoundEffect>("Sword2");
+        _sword3effect = Content.Load<SoundEffect>("Sword3");
+        _sword4effect = Content.Load<SoundEffect>("Sword4");
+        _sword5effect = Content.Load<SoundEffect>("Sword5");
+        _sword6effect = Content.Load<SoundEffect>("Sword6");
 
-    _debugTexture = new Texture2D(GraphicsDevice, 1, 1);
+        _windowBackground.SetData(new Color[] { Color.White });
         _debugTexture.SetData(new Color[] { Color.White });
+
+        //Add content to asset manager
+        AssetManager.Textures.Add(_levelBackgroundSprite, _levelBackgroundSprite.Name);
+        AssetManager.Textures.Add(_windowBackground, "WindowBackground");
+        AssetManager.Textures.Add(_playerSpriteSheet, _playerSpriteSheet.Name);
+        AssetManager.Textures.Add(_enemyAdvancedSheet, _enemyAdvancedSheet.Name);
+        AssetManager.Textures.Add(_enemyRangedSheet, _enemyRangedSheet.Name);
+        AssetManager.Textures.Add(_shadowTexture, _shadowTexture.Name);
+        AssetManager.Textures.Add(_healthTexture, _healthTexture.Name);
+        AssetManager.Textures.Add(_sparks, _sparks.Name);
+        AssetManager.Textures.Add(_startButton, _startButton.Name);
+        AssetManager.Textures.Add(_endButton, _endButton.Name);
+        AssetManager.Textures.Add(_title, _title.Name);
+        AssetManager.Textures.Add(_debugTexture, "DebugTexture");
+        AssetManager.SoundEffects.Add(_sword1effect, _sword1effect.Name);
+        AssetManager.SoundEffects.Add(_sword2effect, _sword2effect.Name);
+        AssetManager.SoundEffects.Add(_sword3effect, _sword3effect.Name);
+        AssetManager.SoundEffects.Add(_sword4effect, _sword4effect.Name);
+        AssetManager.SoundEffects.Add(_sword5effect, _sword5effect.Name);
+        AssetManager.SoundEffects.Add(_sword6effect, _sword6effect.Name);
+
         ColliderManager.DebugTextue = _debugTexture;
         ColliderManager.DrawDebugBoxes = false;
 
-        font = Content.Load<SpriteFont>("FontMain");
-
         //Load Main Screen
-        _mainMenu = new MainMenu(_windowBackground,_startButton,_endButton,_title, _graphics);
+        _mainMenu = new MainMenu(_graphics);
+        MediaPlayer.Volume = 0.0f;
+        MediaPlayer.Play(_menuMusic);
     }
 
 
@@ -120,6 +149,8 @@ public class Game1 : Game
                 break;
             case (GameStates.Start):
                 InitGame();
+                MediaPlayer.Volume = 0.0f;
+                MediaPlayer.Play(_gameMusic);
                 _gameState = GameStates.LoadNextRound;
                 break;
             case (GameStates.LoadNextRound):
@@ -135,7 +166,7 @@ public class Game1 : Game
                 break;
             case (GameStates.End):
                 GameObjectManager.Clear();
-                _scoreScreen = new ScoreScreen(_windowBackground,_endButton, _graphics, font);
+                _scoreScreen = new ScoreScreen(_graphics, font);
                 _scoreScreen.Rounds = _roundManager.CurrentRound;
                 _scoreScreen.Score = _player.Score;
                 _gameState = GameStates.Score;
@@ -186,9 +217,11 @@ public class Game1 : Game
     
     private void InitGame()
     {
-        var environment = new Environment(_windowBackground, _levelBackgroundSprite, _graphics, font);
-        _particleEmitter = new ParticleEmitter(_sparks);
+        var environment = new Environment(_graphics, font);
+        _particleEmitter = new ParticleEmitter();
         _soundPlayer = new SoundPlayer();
+
+        _soundPlayer.Volume = 0.1f;
 
         _soundPlayer.AddSound(_sword1effect);
         _soundPlayer.AddSound(_sword2effect);
@@ -197,14 +230,14 @@ public class Game1 : Game
         _soundPlayer.AddSound(_sword5effect);
         _soundPlayer.AddSound(_sword6effect);
 
-        _player = new PlayerController(_playerSpriteSheet, _shadowTexture,_particleEmitter, _soundPlayer);
+        _player = new PlayerController(_particleEmitter, _soundPlayer);
         _player.Position = new Vector2((_graphics.PreferredBackBufferWidth / 2), _graphics.PreferredBackBufferHeight / 2);
         _player.Name = "Player";
         _player.Health = 100;
 
         _gameManager = new GameManager(_player);
-        _enemySpawner = new EnemySpawner(_enemyAdvancedSheet,_shadowTexture,_particleEmitter,_soundPlayer);
-        _pickupSpawner = new PickupSpawner(_healthTexture);
+        _enemySpawner = new EnemySpawner(_particleEmitter,_soundPlayer);
+        _pickupSpawner = new HealthPickupSpawner();
         _roundManager = new RoundManager(_player, font, _enemySpawner, _pickupSpawner);
     }
 }

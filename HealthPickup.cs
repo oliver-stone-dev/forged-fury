@@ -65,7 +65,6 @@ public class HealthPickup : GameObject
         base.Draw(spriteBatch);
     }
 
-
     public void OnCollision(Collider collider)
     {
         if (collider.Parent.Name == "Player")

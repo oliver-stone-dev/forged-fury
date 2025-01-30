@@ -27,8 +27,12 @@ public class MainMenu : GameObject
     private int _buttonWidth = 160;
     private int _buttonHeight = 64;
 
-    public MainMenu(Texture2D backgroundSprite, Texture2D startButtonSprite, Texture2D exitButtonSprite,Texture2D titleSprite, GraphicsDeviceManager graphics)
+    public MainMenu(GraphicsDeviceManager graphics)
     {
+        var backgroundAsset = AssetManager.Textures.Get("WindowBackground");
+        var backgroundSprite = backgroundAsset!.AssetObject;
+        if (backgroundSprite == null) return;
+
         _background = new Sprite(backgroundSprite);
         _background.Position.X = graphics.PreferredBackBufferWidth / 2;
         _background.Position.Y = graphics.PreferredBackBufferHeight / 2;
@@ -42,17 +46,29 @@ public class MainMenu : GameObject
         _startButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, 380, _buttonWidth, _buttonHeight);
         _exitButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, 500, _buttonWidth, _buttonHeight);
 
-        _startButtonSprite = new Sprite(startButtonSprite);
+        var startBtnAsset = AssetManager.Textures.Get("StartButton");
+        var startSprite = startBtnAsset!.AssetObject;
+        if (startSprite == null) return;
+
+        _startButtonSprite = new Sprite(startSprite);
         _startButtonSprite.Position.X = _startButton.X + _buttonWidth / 2;
         _startButtonSprite.Position.Y = _startButton.Y + _buttonHeight / 2;
         _startButtonSprite.Width = _startButton.Width;
         _startButtonSprite.Height = _startButton.Height;
 
-        _exitButtonSprite = new Sprite(exitButtonSprite);
+        var endBtnAsset = AssetManager.Textures.Get("ExitButton");
+        var endSprite = endBtnAsset!.AssetObject;
+        if (endSprite == null) return;
+
+        _exitButtonSprite = new Sprite(endSprite);
         _exitButtonSprite.Position.X = _exitButton.X + _buttonWidth / 2; ;
         _exitButtonSprite.Position.Y = _exitButton.Y + _buttonHeight / 2; ;
         _exitButtonSprite.Width = _exitButton.Width;
         _exitButtonSprite.Height = _exitButton.Height;
+
+        var titleAsset = AssetManager.Textures.Get("Title");
+        var titleSprite = titleAsset!.AssetObject;
+        if (titleSprite == null) return;
 
         _titleSprite = new Sprite(titleSprite);
         _titleSprite.Position.X = graphics.PreferredBackBufferWidth / 2;
