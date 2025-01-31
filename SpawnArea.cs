@@ -13,12 +13,12 @@ public class SpawnArea
     private Rectangle _spawnAreaLeft;
     private Rectangle _spawnAreaRight;
 
-    private int _spawnAreaWidth = 150;
-    private int _spawnAreaHeight = 300;
-    public SpawnArea()
+    private int _spawnAreaWidth = 128;
+    private int _spawnAreaHeight = 175;
+    public SpawnArea(Rectangle area)
     {
-        _spawnAreaLeft = new Rectangle(400 - (_spawnAreaWidth / 2), 333 - (_spawnAreaHeight / 2), _spawnAreaWidth, _spawnAreaHeight);
-        _spawnAreaRight = new Rectangle(885 - (_spawnAreaWidth / 2), 333 - (_spawnAreaHeight / 2), _spawnAreaWidth, _spawnAreaHeight);
+        _spawnAreaLeft = new Rectangle(area.Left, area.Top, _spawnAreaWidth, _spawnAreaHeight);
+        _spawnAreaRight = new Rectangle(area.Right - _spawnAreaWidth, area.Top, _spawnAreaWidth, _spawnAreaHeight);
     }
 
     private bool PointInsideArea(Vector2 point, Rectangle area)

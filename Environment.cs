@@ -11,7 +11,8 @@ namespace forged_fury;
 
 public class Environment : GameObject
 {
-    private readonly SpriteFont _font;
+    GraphicsDeviceManager _graphics;
+
     private readonly Sprite _background;
     private readonly Sprite _level;
 
@@ -20,9 +21,9 @@ public class Environment : GameObject
     private Collider _leftWallCollider;
     private Collider _rightWallCollider;
 
-    public Environment(GraphicsDeviceManager graphics, SpriteFont font) :base()
+    public Environment(GraphicsDeviceManager graphics) :base()
     {
-        _font = font;
+        _graphics = graphics;
 
         //Background sprite
         var backgroundAsset = AssetManager.Textures.Get("WindowBackground");
@@ -44,7 +45,7 @@ public class Environment : GameObject
         _level = new Sprite(levelSprite);
         _level.Position.X = graphics.PreferredBackBufferWidth / 2;
         _level.Position.Y = graphics.PreferredBackBufferHeight / 2;
-        _level.Scale = 2f;
+        _level.Scale = 1f;
 
         //Load wall colliders
         _topWallCollider = new Collider(this);
@@ -52,25 +53,25 @@ public class Environment : GameObject
         _leftWallCollider = new Collider(this);
         _rightWallCollider = new Collider(this);
 
-        _topWallCollider.Width = 500 * 2;
-        _topWallCollider.Height = 32;
-        _topWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2;
-        _topWallCollider.Position.Y = (graphics.PreferredBackBufferHeight / 2) - 270;
+        _topWallCollider.Width = _level.Width;
+        _topWallCollider.Height = 16;
+        _topWallCollider.Position.X = _level.Position.X;
+        _topWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2 - (_level.Height / 2) + (_topWallCollider.Height / 2);
 
-        _bottomWallCollider.Width = 500 * 2;
-        _bottomWallCollider.Height = 32;
-        _bottomWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2;
-        _bottomWallCollider.Position.Y = (graphics.PreferredBackBufferHeight / 2) + 240;
+        _bottomWallCollider.Width = _level.Width;
+        _bottomWallCollider.Height = 16;
+        _bottomWallCollider.Position.X = _level.Position.X;
+        _bottomWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2 + (_level.Height / 2) - ((_topWallCollider.Height) * 1.75f);
 
-        _leftWallCollider.Width = 32;
-        _leftWallCollider.Height = 400 * 2;
-        _leftWallCollider.Position.X = (graphics.PreferredBackBufferWidth / 2) - 435;
-        _leftWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2;
+        _leftWallCollider.Width = 16;
+        _leftWallCollider.Height = _level.Height;
+        _leftWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2 - (_level.Width / 2) + (_leftWallCollider.Width / 2);
+        _leftWallCollider.Position.Y = _level.Position.Y;
 
-        _rightWallCollider.Width = 32;
-        _rightWallCollider.Height = 400 * 2;
-        _rightWallCollider.Position.X = (graphics.PreferredBackBufferWidth / 2) + 435;
-        _rightWallCollider.Position.Y = graphics.PreferredBackBufferHeight / 2;
+        _rightWallCollider.Width = 16;
+        _rightWallCollider.Height = _level.Height;
+        _rightWallCollider.Position.X = graphics.PreferredBackBufferWidth / 2 + (_level.Width / 2) - (_rightWallCollider.Width / 2);
+        _rightWallCollider.Position.Y = _level.Position.Y;
 
         _topWallCollider.Enabled = true;
         _bottomWallCollider.Enabled = true;
@@ -88,5 +89,32 @@ public class Environment : GameObject
         _background.Draw(spriteBatch);
         _level.Draw(spriteBatch);
         base.Draw(spriteBatch);
+    }
+
+    public Rectangle GetPlayableArea()
+    {
+        var x = Convert.ToInt32(_graphics.PreferredBackBufferWidth / 2 - (_level.Width / 2) + 32);
+        var y = Convert.ToInt32(_graphics.PreferredBackBufferHeight / 2 - (_level.Height / 2) + 48);
+
+        var area = new Rectangle(x, y, _level.Width - 64, _level.Height - 128);
+
+        return area;
+    }
+
+    public Vector2 GetLevelPosition()
+    {
+        return _level.Position;
+    }
+
+    public Vector2 GetLevelSize()
+    {
+        var size = new Vector2(_level.Width, _level.Height);
+        return size;
+    }
+
+    public Vector2 GetWindowSize()
+    {
+        var size = new Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+        return size;
     }
 }

@@ -43,8 +43,8 @@ public class MainMenu : GameObject
         MenuWidth = graphics.PreferredBackBufferWidth;
         MenuHeight = graphics.PreferredBackBufferHeight;
 
-        _startButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, 380, _buttonWidth, _buttonHeight);
-        _exitButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, 500, _buttonWidth, _buttonHeight);
+        _startButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, MenuHeight / 2, _buttonWidth, _buttonHeight);
+        _exitButton = new Rectangle((MenuWidth / 2) - _buttonWidth / 2, MenuHeight / 2 + Convert.ToInt32((_buttonHeight * 1.5f)), _buttonWidth, _buttonHeight);
 
         var startBtnAsset = AssetManager.Textures.Get("StartButton");
         var startSprite = startBtnAsset!.AssetObject;
@@ -72,10 +72,10 @@ public class MainMenu : GameObject
 
         _titleSprite = new Sprite(titleSprite);
         _titleSprite.Position.X = graphics.PreferredBackBufferWidth / 2;
-        _titleSprite.Position.Y = graphics.PreferredBackBufferHeight / 2 - 200;
+        _titleSprite.Position.Y = graphics.PreferredBackBufferHeight / 2 - (MenuHeight / 2) + titleSprite.Height;
         _titleSprite.Width = titleSprite.Width;
         _titleSprite.Height = titleSprite.Height;
-        _titleSprite.Scale = 4f;
+        _titleSprite.Scale = 2f;
     }
 
     public override void Update(GameTime gameTime)

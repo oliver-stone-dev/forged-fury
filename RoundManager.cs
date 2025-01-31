@@ -17,12 +17,13 @@ public class RoundManager : GameObject
     private readonly SpriteFont _font;
     private readonly EnemySpawner _enemySpawner;
     private readonly HealthPickupSpawner _pickupSpawner;
+    private readonly Environment _environment;
 
     private bool _roundStarted = false;
     private const int _waveLengthMs = 10000;
     private int _timeUntilNextWave = 0;
 
-    private const int _healthPickupMs = 20000;
+    private const int _healthPickupMs = 10000;
     private int _healthPickupTimer = 0;
     private const int _maxHealthPerRound = 5;
     private int _healthPickupCounter = 0;
@@ -45,12 +46,13 @@ public class RoundManager : GameObject
 
     public bool RoundFinishedFlag { get; set; }
 
-    public RoundManager(PlayerController player, SpriteFont font, EnemySpawner enemySpawner, HealthPickupSpawner pickupSpawner)
+    public RoundManager(PlayerController player, SpriteFont font, EnemySpawner enemySpawner, HealthPickupSpawner pickupSpawner,Environment environment)
     {
         _font = font;
         _player = player;
         _enemySpawner = enemySpawner;
         _pickupSpawner = pickupSpawner;
+        _environment = environment;
         CurrentRound = 0;
     }
 
@@ -90,10 +92,18 @@ public class RoundManager : GameObject
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.DrawString(_font, $"Round: {CurrentRound} ", new Vector2(200, 15), Color.White);
-        spriteBatch.DrawString(_font, $"Enemies Remaining: {EnemiesRemaining}", new Vector2(720, 15), Color.White);
-        spriteBatch.DrawString(_font, $"Health: {_player.Health} ", new Vector2(200, 660), Color.White);
-        spriteBatch.DrawString(_font, $"Score: {_player.Score} ", new Vector2(950, 660), Color.White);
+        var levelPosition = _environment.GetLevelPosition();
+        var levelSize = _environment.GetLevelSize();
+        var textArea = new Rectangle(
+            Convert.ToInt32(levelPosition.X - (levelSize.X / 2)),
+            Convert.ToInt32(levelPosition.Y - (levelSize.Y / 2)),
+            Convert.ToInt32(levelSize.X),
+            Convert.ToInt32(levelSize.Y));
+
+        spriteBatch.DrawString(_font, $"Round: {CurrentRound} ", new Vector2(textArea.Left, textArea.Top * 0.25f), Color.White);
+        spriteBatch.DrawString(_font, $"Enemies Remaining: {EnemiesRemaining}", new Vector2(textArea.Right * 0.6f, textArea.Top * 0.25f), Color.White);
+        spriteBatch.DrawString(_font, $"Health: {_player.Health} ", new Vector2(textArea.Left, textArea.Bottom), Color.White);
+        spriteBatch.DrawString(_font, $"Score: {_player.Score} ", new Vector2(textArea.Right * 0.80f, textArea.Bottom), Color.White);
         base.Draw(spriteBatch);
     }
 

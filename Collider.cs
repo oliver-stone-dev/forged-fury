@@ -23,6 +23,8 @@ public class Collider : IDisposable
 
     public string? Name { get; set; }
 
+    public string? IgnoreName { get; set; }
+
     public bool Enabled { get; set; }
 
     public bool EnablePhysicsCollions { get; set; }
@@ -40,6 +42,7 @@ public class Collider : IDisposable
         Parent = parent;
         ColliderManager.Add(this);
         EnablePhysicsCollions = true;
+        IgnoreName = String.Empty;
     }
 
     public void Update()

@@ -81,6 +81,14 @@ public static class ColliderManager
 
         foreach (var colliderToCheck in _colliders.ToList())
         {
+            if (collider.Parent.Name == colliderToCheck.IgnoreName)
+            {
+                continue;
+            }
+            if (colliderToCheck.Parent.Name == collider.IgnoreName)
+            {
+                continue;
+            }
             if (colliderToCheck == collider) continue;
             if (colliderToCheck.Enabled == false) continue;
             if (collider.Parent == colliderToCheck.Parent) continue;

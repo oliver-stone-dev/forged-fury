@@ -30,15 +30,15 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
     private bool _hasAttackedFlag = false;
     private int _attackCooldownTimer = 0;
 
-    private int _attackHeight = 50;
-    private int _attackWidth = 30;
-    private int _attackPosition = 55;
+    private int _attackHeight = 40;
+    private int _attackWidth = 20;
+    private float _attackPositionOffsetAmount = 1.0f;
 
     private bool _hasDashed = false;
     private bool _dashButtonPressed = false;
     private int _dashCoolDownMs = 2500;
     private int _dashCooldownTimer = 0;
-    private float _dashAmount = 6f;
+    private float _dashAmount = 8f;
 
     private int _invulnerableMs = 500;
     private int _invulnerableTimer = 0;
@@ -101,13 +101,13 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
         if (_characterDirection == Character.Direction.Right)
         {
             var pos = Position;
-            pos.X += _attackPosition;
+            pos.X += Width * _attackPositionOffsetAmount;
             _attackCollider.Position = pos;
         }
         else
         {
             var pos = Position;
-            pos.X -= _attackPosition;
+            pos.X -= Width * _attackPositionOffsetAmount;
             _attackCollider.Position = pos;
         }
     }
@@ -129,10 +129,12 @@ public class PlayerController : Character, IDamagable, IHealable, IScoreTracker
         }
         if (state.IsKeyDown(Keys.A))
         {
+            _characterDirection = Direction.Left;
             _movement.X = -1;
         }
         if (state.IsKeyDown(Keys.D))
         {
+            _characterDirection = Direction.Right;
             _movement.X = 1;
         }
         if (state.IsKeyDown(Keys.Space))

@@ -20,13 +20,15 @@ public class Character : GameObject
         Left,
         Right
     }
+    protected const int _defaultWidth = 24;
+    protected const int _defaultHeight = 48;
 
     private int _health = 0;
     private int _startingHealth = 10;
     private int _maxHealth = 100;
 
-    private readonly float _defaultMoveSpeed = 40f;
-    private readonly float _maxSpeed = 100f;
+    private readonly float _defaultMoveSpeed = 20f;
+    private readonly float _maxSpeed = 50;
     private readonly float _stoppedVelocity = 10f;
 
     protected bool _isDying = false;
@@ -46,10 +48,10 @@ public class Character : GameObject
     public Vector2 Velocity;
     private Texture2D texture2D;
 
-    private int _shadowYOffset = 18;
+    private float _shadowYOffsetAmount = 0.045f;
 
     private float _aliveFriction = 0.8f;
-    private float _deadFriction = 0.7f;
+    private float _deadFriction = 0.6f;
 
     
     protected bool _hasSpawned = false;
@@ -74,6 +76,9 @@ public class Character : GameObject
         set => _health = value >= _maxHealth ? _maxHealth : value;
     }
 
+    public int Width { get; set; }
+    public int Height { get; set; }
+
     public float Scale { get; set; }
     public float MoveSpeed { get; set; }
     public float Friction { get; set; }
@@ -83,23 +88,27 @@ public class Character : GameObject
 
     public Character() : base()
     {
+        Width = _defaultWidth;
+        Height = _defaultHeight;
+
         Health = _startingHealth;
 
         MoveSpeed = _defaultMoveSpeed;
         _position = Vector2.Zero;
         Velocity = Vector2.Zero;
-        Scale = 2f;
+        Scale = 1f;
 
         var shadowAsset = AssetManager.Textures.Get("Shadow");
         var shadowSprite = shadowAsset!.AssetObject;
         if (shadowSprite == null) return;
 
         _shadow = new Sprite(shadowSprite);
+        _shadow.Scale = 0.9f;
 
         _characterCollider = new Collider(this);
         _characterCollider.Position = Position;
-        _characterCollider.Height = 90;
-        _characterCollider.Width = 50;
+        _characterCollider.Height = Height;
+        _characterCollider.Width = Width;
         _characterCollider.Name = "solid";
         _characterCollider.Enabled = true;
 
@@ -108,7 +117,7 @@ public class Character : GameObject
 
     public override void Update(GameTime gameTime)
     {
-        SetDirection();
+        //SetDirection();
         HandleSpawnAnimation();
         SetAnimatorState();
         ClampVelocity();
@@ -273,7 +282,7 @@ public class Character : GameObject
     private void SetShadowPosition()
     {
         var pos = Position;
-        pos.Y += _shadowYOffset;
+        pos.Y += Height * _shadowYOffsetAmount;
         _shadow.Position = pos;
     }
 
@@ -286,8 +295,7 @@ public class Character : GameObject
     {
         if (_isDying)
         {
-            _characterCollider.Enabled = false;
-
+            //_characterCollider.Enabled = false;
             _deathDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
 
             if (_deathDelayTimer <= 0)

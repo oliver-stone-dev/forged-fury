@@ -40,21 +40,21 @@ public class Arrow : GameObject
         if (arrowRightSprite == null) return;
 
         _arrowRightSprite = new Sprite(arrowRightSprite);
-        _arrowRightSprite.Scale = 2f;
+        _arrowRightSprite.Scale = 1f;
 
         var arrowLeftAsset = AssetManager.Textures.Get("ArrowLeft");
         var arrowLeftSprite = arrowLeftAsset!.AssetObject;
         if (arrowLeftSprite == null) return;
 
         _arrowLeftSprite = new Sprite(arrowLeftSprite);
-        _arrowLeftSprite.Scale = 2f;
+        _arrowLeftSprite.Scale = 1f;
 
         _selfDestructTimer = _selfDestructMs;
 
         _collider = new Collider(this);
         _collider.OnCollisionAction = OnCollision;
-        _collider.Width = arrowLeftSprite.Width;
-        _collider.Height = arrowLeftSprite.Height;
+        _collider.Width = Convert.ToInt32(arrowLeftSprite.Width * 0.75f);
+        _collider.Height = Convert.ToInt32(arrowLeftSprite.Height * 0.5f);
         _collider.Enabled = true;
     }
 

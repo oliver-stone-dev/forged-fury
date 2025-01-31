@@ -28,9 +28,9 @@ public class EnemyRangedController : Character, IDamagable
 
     private int _scoreReward = 2;
 
-    private float _hitBackAmount = 1000f;
+    private float _hitBackAmount = 1250f;
 
-    private float _arrowSpeed = 500f;
+    private float _arrowSpeed = 250f;
 
     public Vector2 TargetPosition { get; set; }
 
@@ -82,7 +82,7 @@ public class EnemyRangedController : Character, IDamagable
 
         TargetPosition = _playerToFollow.Position;
 
-        if (TargetPosition.X > Position.X) _characterDirection = Direction.Right;
+        if (TargetPosition.X >= Position.X) _characterDirection = Direction.Right;
         else if (TargetPosition.X < Position.X) _characterDirection = Direction.Left;
 
         var distance = Vector2.Distance(Position, TargetPosition);
@@ -141,6 +141,7 @@ public class EnemyRangedController : Character, IDamagable
                 {
                     scoreTracker.AddScore(_scoreReward);
                 }
+                _arrowLaunchFlag = false;
                 DeathFlag = true;
             }
         }

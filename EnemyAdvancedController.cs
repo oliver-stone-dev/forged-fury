@@ -13,11 +13,15 @@ public class EnemyAdvancedController : Character, IDamagable
 {
     private readonly Character _playerToFollow;
 
-    private int _attackColliderDelayMs = 350;
+    private const int _attackDelayMs = 200;
     private int _attackDelayTimer = 0;
+    private bool _attackingCharging = false;
+
+    private const int _attackColliderDelayMs = 200;
+    private int _attackCollisionDelayTimer = 0;
     private bool _attackColliderFlag = false;
 
-    private int _attackCooldownMs = 1000;
+    private const int _attackCooldownMs = 1000;
     private bool _hasAttackedFlag = false;
     private int _attackCooldownTimer = 0;
 
@@ -26,14 +30,14 @@ public class EnemyAdvancedController : Character, IDamagable
     private readonly ParticleEmitter _particleEmitter;
     private readonly SoundPlayer _soundPlayer;
 
-    private float _defaultAttackDistance = 70f;
-    private int _attackHeight = 50;
-    private int _attackWidth = 30;
-    private int _attackPosition = 40;
+    private float _defaultAttackDistance = 35f;
+    private int _attackHeight = 30;
+    private int _attackWidth = 20;
+    private float _attackPositionOffsetAmount = 1.0f;
 
     private int _scoreReward = 1;
 
-    private float _hitBackAmount = 1500f;
+    private float _hitBackAmount = 1000f;
 
     public Vector2 TargetPosition { get; set; }
 
@@ -57,7 +61,7 @@ public class EnemyAdvancedController : Character, IDamagable
         _animatedSprite.Scale = Scale;
 
         _animationController = new(_animatedSprite);
-        _animationController.AttackFrames = 4;
+        _animationController.AttackFrames = 3;
 
         _attackCollider = new(this);
         _attackCollider.Enabled = false;
@@ -77,6 +81,7 @@ public class EnemyAdvancedController : Character, IDamagable
     {
         SetAttackColliderPosition();
         FollowTarget();
+        HandleAttackCharge(gameTime);
         ResetAttack(gameTime);
         CheckHealth();
         base.Update(gameTime);
@@ -87,13 +92,13 @@ public class EnemyAdvancedController : Character, IDamagable
         if (_characterDirection == Character.Direction.Right)
         {
             var pos = Position;
-            pos.X += _attackPosition;
+            pos.X += Width * _attackPositionOffsetAmount;
             _attackCollider.Position = pos;
         }
         else
         {
             var pos = Position;
-            pos.X -= _attackPosition;
+            pos.X -= Width * _attackPositionOffsetAmount;
             _attackCollider.Position = pos;
         }
     }
@@ -106,14 +111,14 @@ public class EnemyAdvancedController : Character, IDamagable
 
         TargetPosition = _playerToFollow.Position;
 
-        if (TargetPosition.X > Position.X) _characterDirection = Direction.Right;
+        if (TargetPosition.X >= Position.X) _characterDirection = Direction.Right;
         else if (TargetPosition.X < Position.X) _characterDirection = Direction.Left;
 
         var distance = Vector2.Distance(Position, TargetPosition);
 
         if (distance <= MinAttackDistance)
         {
-            Attack();
+            ChargeAttack();
         }
         else
         {
@@ -121,6 +126,29 @@ public class EnemyAdvancedController : Character, IDamagable
             var dir = Vector2.Normalize(dif);
             var v = dir * MoveSpeed;
             Velocity = Vector2.Subtract(Velocity, v);
+            _attackingCharging = false;
+            StopAttack();
+        }
+    }
+
+    private void ChargeAttack()
+    {
+        if (_attackingCharging) return;
+
+        _attackingCharging = true;
+        _attackDelayTimer = _attackDelayMs;
+    }
+
+    private void HandleAttackCharge(GameTime gameTime)
+    {
+        if (_attackingCharging == false) return;
+
+        _attackDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
+        if (_attackDelayTimer <= 0)
+        {
+            Attack();
+            _attackingCharging = false;
+            _attackDelayTimer = _attackDelayMs;
         }
     }
 
@@ -131,7 +159,7 @@ public class EnemyAdvancedController : Character, IDamagable
         _attackFlag = true;
         _hasAttackedFlag = true;
         _attackCooldownTimer = _attackCooldownMs;
-        _attackDelayTimer = _attackColliderDelayMs;
+        _attackCollisionDelayTimer = _attackColliderDelayMs;
     }
 
     private void ResetAttack(GameTime gameTime)
@@ -139,9 +167,9 @@ public class EnemyAdvancedController : Character, IDamagable
         if (_hasAttackedFlag == false) return;
         
         _attackCooldownTimer -= gameTime.ElapsedGameTime.Milliseconds;
-        _attackDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
+        _attackCollisionDelayTimer -= gameTime.ElapsedGameTime.Milliseconds;
 
-        if (_attackDelayTimer <= 0)
+        if (_attackCollisionDelayTimer <= 0)
         {
             if (_attackCollider.Enabled == false)
             {
@@ -161,9 +189,10 @@ public class EnemyAdvancedController : Character, IDamagable
         _hasAttackedFlag = false;
         _attackFlag = false;
         _attackCooldownTimer = _attackCooldownMs;
-        _attackDelayTimer = _attackColliderDelayMs;
+        _attackCollisionDelayTimer = _attackColliderDelayMs;
         _attackColliderFlag = false;
         _attackCollider.Enabled = false;
+        _attackingCharging = false;
     }
 
     private void CheckHealth()
@@ -177,7 +206,10 @@ public class EnemyAdvancedController : Character, IDamagable
                 {
                     scoreTracker.AddScore(_scoreReward);
                 }
+                StopAttack();
+                _characterCollider.IgnoreName = "Player";
                 DeathFlag = true;
+                _attackCollider.Enabled = false;
             }
         }
     }

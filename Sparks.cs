@@ -38,7 +38,7 @@ public class Sparks : GameObject
         _animatedSprite.FrameWidth = 16;
         _animatedSprite.Height = 32;
         _animatedSprite.Width = 16;
-        _animatedSprite.Scale = 3f;
+        _animatedSprite.Scale = 1.5f;
 
         _animatedSprite.Position = _position;
     }

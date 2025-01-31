@@ -42,6 +42,7 @@ public class Game1 : Game
     private const float _spriteScale = 2f;
     private SpriteFont font;
 
+    private Environment _environment;
     private MainMenu _mainMenu;
     private ScoreScreen _scoreScreen;
     private GameManager _gameManager;
@@ -76,8 +77,8 @@ public class Game1 : Game
     protected override void Initialize()
     {
         _graphics.IsFullScreen = false;
-        _graphics.PreferredBackBufferWidth = 1280;
-        _graphics.PreferredBackBufferHeight = 720;
+        _graphics.PreferredBackBufferWidth = 640;
+        _graphics.PreferredBackBufferHeight = 360;
         _graphics.ApplyChanges();
 
         base.Initialize();
@@ -185,7 +186,7 @@ public class Game1 : Game
                 break;
             case (GameStates.End):
                 GameObjectManager.Clear();
-                _scoreScreen = new ScoreScreen(_graphics, font);
+                _scoreScreen = new ScoreScreen(_graphics, font, _environment);
                 _scoreScreen.Rounds = _roundManager.CurrentRound;
                 _scoreScreen.Score = _player.Score;
                 _gameState = GameStates.Score;
@@ -236,7 +237,7 @@ public class Game1 : Game
     
     private void InitGame()
     {
-        var environment = new Environment(_graphics, font);
+        _environment = new Environment(_graphics);
         _particleEmitter = new ParticleEmitter();
         _soundPlayer = new SoundPlayer();
 
@@ -255,8 +256,8 @@ public class Game1 : Game
         _player.Health = 100;
 
         _gameManager = new GameManager(_player);
-        _enemySpawner = new EnemySpawner(_particleEmitter,_soundPlayer);
-        _pickupSpawner = new HealthPickupSpawner();
-        _roundManager = new RoundManager(_player, font, _enemySpawner, _pickupSpawner);
+        _enemySpawner = new EnemySpawner(_particleEmitter,_soundPlayer, _environment);
+        _pickupSpawner = new HealthPickupSpawner(_environment);
+        _roundManager = new RoundManager(_player, font, _enemySpawner, _pickupSpawner, _environment);
     }
 }
